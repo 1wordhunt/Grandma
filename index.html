@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🏚️ GRANNY EVİ – 3 KATLI + PUZZLE + GRANNY</title>
+    <title>🏚️ GRANNY KONAĞI – SADECE EV (3 KATLI)</title>
     <style>
         * {
             margin: 0;
@@ -17,8 +17,8 @@
             margin: 0;
             padding: 0;
             overflow: hidden;
-            font-family: 'Arial Black', sans-serif;
-            background: black;
+            font-family: 'Arial', sans-serif;
+            background: #111;
         }
         
         #gameCanvas {
@@ -35,23 +35,24 @@
             left: 20px;
             color: white;
             background: rgba(0,0,0,0.7);
-            padding: 10px 20px;
-            border-radius: 50px;
-            font-size: 14px;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-size: 16px;
             z-index: 100;
             backdrop-filter: blur(5px);
-            border: 1px solid #ff0000;
+            border: 1px solid #8b4513;
             pointer-events: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
         
         #controls-left {
             position: fixed;
             bottom: 100px;
             left: 30px;
-            width: 120px;
-            height: 120px;
-            background: rgba(255,0,0,0.2);
-            border: 2px solid #ff0000;
+            width: 140px;
+            height: 140px;
+            background: rgba(139, 69, 19, 0.3);
+            border: 3px solid #8b4513;
             border-radius: 50%;
             display: flex;
             justify-content: center;
@@ -59,15 +60,17 @@
             z-index: 200;
             backdrop-filter: blur(5px);
             touch-action: none;
+            box-shadow: 0 0 25px rgba(139,69,19,0.3);
         }
         
         #joystick-inner {
-            width: 60px;
-            height: 60px;
-            background: rgba(255,0,0,0.6);
+            width: 70px;
+            height: 70px;
+            background: rgba(139, 69, 19, 0.7);
             border-radius: 50%;
-            transition: transform 0.05s;
-            box-shadow: 0 0 20px #ff0000;
+            transition: transform 0.03s;
+            box-shadow: 0 0 20px #8b4513;
+            border: 2px solid #cd853f;
         }
         
         #controls-right {
@@ -81,96 +84,31 @@
             touch-action: none;
         }
         
-        #action-btn {
-            position: fixed;
-            bottom: 100px;
-            right: 30px;
-            width: 80px;
-            height: 80px;
-            background: rgba(255,0,0,0.6);
-            border: 3px solid #ff0000;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
-            z-index: 250;
-            backdrop-filter: blur(5px);
-            box-shadow: 0 0 30px #ff0000;
-            touch-action: none;
-        }
-        
         #status {
             position: fixed;
             top: 20px;
             left: 20px;
-            color: #ff5555;
+            color: #f5deb3;
             background: rgba(0,0,0,0.7);
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 14px;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 16px;
             z-index: 100;
-        }
-        
-        #inventory {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 10px;
-            z-index: 300;
-        }
-        
-        .inventory-slot {
-            width: 60px;
-            height: 60px;
-            background: rgba(0,0,0,0.7);
-            border: 2px solid #ff0000;
-            border-radius: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-size: 24px;
-            backdrop-filter: blur(5px);
-        }
-        
-        .inventory-slot.active {
-            border-color: #ffff00;
-            box-shadow: 0 0 20px yellow;
-        }
-        
-        #puzzle-hint {
-            position: fixed;
-            top: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.8);
-            color: #ffaa00;
-            padding: 15px 30px;
-            border-radius: 50px;
-            font-size: 18px;
-            border: 2px solid #ffaa00;
-            z-index: 350;
-            display: none;
+            border: 1px solid #cd853f;
             backdrop-filter: blur(5px);
         }
         
         @media (max-width: 768px) {
-            #info { font-size: 12px; bottom: 10px; left: 10px; }
-            #controls-left { width: 100px; height: 100px; left: 20px; bottom: 80px; }
-            #joystick-inner { width: 50px; height: 50px; }
-            #action-btn { width: 70px; height: 70px; bottom: 80px; right: 20px; font-size: 20px; }
-            .inventory-slot { width: 50px; height: 50px; font-size: 20px; }
+            #info { font-size: 14px; padding: 8px 16px; bottom: 15px; left: 15px; }
+            #controls-left { width: 110px; height: 110px; left: 20px; bottom: 80px; }
+            #joystick-inner { width: 55px; height: 55px; }
+            #status { font-size: 14px; padding: 8px 16px; }
         }
     </style>
 </head>
 <body>
-    <div id="status">🏚️ GRANNY EVİ | 3 KAT | 30+ EŞYA | 20+ PUZZLE | GRANNY PEŞİNDE</div>
-    <div id="info">Sol joystick hareket | Sağ ekran kaydır bakış | Kırmızı buton eylem | Envanter alt</div>
+    <div id="status">🏚️ GRANNY KONAĞI | 3 KAT | 25+ ODA | GERÇEKÇİ</div>
+    <div id="info">👇 Sol joystick hareket | 👉 Sağ ekranı kaydır bakış</div>
     
     <div id="controls-left">
         <div id="joystick-inner"></div>
@@ -178,68 +116,38 @@
     
     <div id="controls-right"></div>
     
-    <div id="action-btn">🔍</div>
-    
-    <div id="inventory">
-        <div class="inventory-slot" id="slot0"></div>
-        <div class="inventory-slot" id="slot1"></div>
-        <div class="inventory-slot" id="slot2"></div>
-        <div class="inventory-slot" id="slot3"></div>
-    </div>
-    
-    <div id="puzzle-hint">🔑 Anahtarı bulman lazım!</div>
-    
     <canvas id="gameCanvas"></canvas>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     
     <script>
         (function() {
-            // -------------------- OYUN DEĞİŞKENLERİ --------------------
+            // -------------------- DEĞİŞKENLER --------------------
             let scene, camera, renderer;
-            let player = { x: 0, y: 1.6, z: 0, height: 1.6 };
+            let player = { x: 5, y: 1.7, z: 5 };
             let keys = {};
             let isMobile = false;
-            let doors = [];
-            let items = [];
-            let puzzles = [];
-            let granny = null;
-            let inventory = ['', '', '', ''];
-            let selectedSlot = 0;
             
             // Işıklar
-            let ambientLight, torchLight, pointLights = [];
+            let ambientLight, dirLight, torchLight;
             
             // Joystick
             let joystickActive = false;
             let joystickPos = { x: 0, y: 0 };
             let moveDirection = { x: 0, z: 0 };
             
-            // Kamera (dokunmatik bakış)
+            // Kamera
             let pitch = 0;
             let yaw = 0;
             let touchStartX = 0;
             let touchStartY = 0;
             
-            // Granny AI
-            let grannyPos = { x: 10, y: 0, z: 10 };
-            let grannySpeed = 0.03;
-            let grannyState = 'idle'; // idle, chase, search
-            let lastNoise = 0;
-            let noiseLevel = 0;
-            
-            // Zaman
-            let timeLeft = 600; // 10 dakika
-            
             // -------------------- BAŞLANGIÇ --------------------
             window.onload = function() {
                 detectMobile();
                 initScene();
-                createHouse();
-                createGranny();
-                createPuzzles();
+                createMansion();
                 animate();
-                startTimer();
             };
             
             function detectMobile() {
@@ -247,58 +155,71 @@
             }
             
             function initScene() {
-                try {
-                    scene = new THREE.Scene();
-                    scene.background = new THREE.Color(0x0a0a1a);
-                    scene.fog = new THREE.Fog(0x0a0a1a, 5, 30);
-                    
-                    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-                    camera.position.set(0, 1.6, 5);
-                    
-                    renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('gameCanvas'), antialias: true });
-                    renderer.setSize(window.innerWidth, window.innerHeight);
-                    renderer.shadowMap.enabled = true;
-                    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-                    renderer.shadowMap.bias = 0.0001;
-                    
-                    // Işıklar
-                    ambientLight = new THREE.AmbientLight(0x222233);
-                    scene.add(ambientLight);
-                    
-                    const dirLight = new THREE.DirectionalLight(0xffaa88, 0.5);
-                    dirLight.position.set(5, 10, 5);
-                    dirLight.castShadow = true;
-                    dirLight.shadow.mapSize.width = 2048;
-                    dirLight.shadow.mapSize.height = 2048;
-                    dirLight.shadow.camera.near = 0.5;
-                    dirLight.shadow.camera.far = 50;
-                    dirLight.shadow.camera.left = -20;
-                    dirLight.shadow.camera.right = 20;
-                    dirLight.shadow.camera.top = 20;
-                    dirLight.shadow.camera.bottom = -20;
-                    scene.add(dirLight);
-                    
-                    torchLight = new THREE.PointLight(0xffaa66, 1.5, 15);
-                    torchLight.position.copy(camera.position);
-                    scene.add(torchLight);
-                    
-                    // Olaylar
-                    window.addEventListener('resize', onResize);
-                    window.addEventListener('keydown', (e) => keys[e.key.toLowerCase()] = true);
-                    window.addEventListener('keyup', (e) => keys[e.key.toLowerCase()] = false);
-                    
-                    // Mouse bakış
-                    document.addEventListener('mousemove', onMouseMove);
-                    document.getElementById('gameCanvas').addEventListener('click', () => {
-                        document.getElementById('gameCanvas').requestPointerLock();
-                    });
-                    
-                    // Mobil kontroller
-                    setupMobileControls();
-                    
-                } catch (e) {
-                    console.error('Hata:', e);
+                // Sahne
+                scene = new THREE.Scene();
+                scene.background = new THREE.Color(0x111122);
+                scene.fog = new THREE.Fog(0x111122, 20, 50);
+                
+                // Kamera
+                camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                camera.position.set(5, 1.7, 5);
+                
+                // Renderer
+                renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('gameCanvas'), antialias: true, alpha: false });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.shadowMap.enabled = true;
+                renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+                renderer.shadowMap.bias = 0.00005;
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                
+                // Işık sistemi
+                ambientLight = new THREE.AmbientLight(0x404060);
+                scene.add(ambientLight);
+                
+                dirLight = new THREE.DirectionalLight(0xffeedd, 0.8);
+                dirLight.position.set(10, 20, 10);
+                dirLight.castShadow = true;
+                dirLight.shadow.mapSize.width = 2048;
+                dirLight.shadow.mapSize.height = 2048;
+                dirLight.shadow.camera.near = 0.5;
+                dirLight.shadow.camera.far = 50;
+                dirLight.shadow.camera.left = -20;
+                dirLight.shadow.camera.right = 20;
+                dirLight.shadow.camera.top = 20;
+                dirLight.shadow.camera.bottom = -20;
+                dirLight.shadow.bias = -0.0005;
+                scene.add(dirLight);
+                
+                // İkinci ışık (iç mekan için)
+                const fillLight = new THREE.PointLight(0xffaa88, 0.4, 30);
+                fillLight.position.set(0, 5, 0);
+                scene.add(fillLight);
+                
+                // El feneri efekti
+                torchLight = new THREE.PointLight(0xffcc99, 1.2, 20);
+                torchLight.position.copy(camera.position);
+                scene.add(torchLight);
+                
+                // Yardımcı ışıklar
+                for (let i = 0; i < 8; i++) {
+                    const light = new THREE.PointLight(0xaa8866, 0.2, 15);
+                    light.position.set(Math.sin(i)*8, 3 + i*0.5, Math.cos(i)*8);
+                    scene.add(light);
                 }
+                
+                // Olaylar
+                window.addEventListener('resize', onResize);
+                window.addEventListener('keydown', (e) => keys[e.key.toLowerCase()] = true);
+                window.addEventListener('keyup', (e) => keys[e.key.toLowerCase()] = false);
+                
+                // Mouse bakış
+                document.addEventListener('mousemove', onMouseMove);
+                document.getElementById('gameCanvas').addEventListener('click', () => {
+                    document.getElementById('gameCanvas').requestPointerLock();
+                });
+                
+                // Mobil kontroller
+                setupMobileControls();
             }
             
             function setupMobileControls() {
@@ -339,7 +260,7 @@
                     moveDirection.z = 0;
                 });
                 
-                // Sağ ekran kaydırma ile bakış
+                // Sağ ekran kaydırma
                 const rightCtrl = document.getElementById('controls-right');
                 rightCtrl.addEventListener('touchstart', (e) => {
                     const touch = e.touches[0];
@@ -363,21 +284,6 @@
                     touchStartX = touch.clientX;
                     touchStartY = touch.clientY;
                 });
-                
-                // Aksiyon butonu
-                document.getElementById('action-btn').addEventListener('touchstart', (e) => {
-                    e.preventDefault();
-                    interact();
-                });
-                
-                // Envanter seçimi (dokunmatik için basit)
-                document.querySelectorAll('.inventory-slot').forEach((slot, index) => {
-                    slot.addEventListener('touchstart', () => {
-                        selectedSlot = index;
-                        document.querySelectorAll('.inventory-slot').forEach(s => s.classList.remove('active'));
-                        slot.classList.add('active');
-                    });
-                });
             }
             
             function onMouseMove(e) {
@@ -391,278 +297,481 @@
                 }
             }
             
-            // -------------------- 3 KATLI EV --------------------
-            function createHouse() {
-                const wallMaterial = new THREE.MeshStandardMaterial({ color: 0x664422, roughness: 0.7 });
-                const floorMaterial = new THREE.MeshStandardMaterial({ color: 0x442211, roughness: 0.9 });
-                const doorMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
-                const glassMaterial = new THREE.MeshStandardMaterial({ color: 0xaaccff, transparent: true, opacity: 0.3 });
+            // -------------------- GERÇEKÇİ KONAK --------------------
+            function createMansion() {
+                // Malzemeler
+                const brickMaterial = new THREE.MeshStandardMaterial({ 
+                    color: 0xaa5533,
+                    roughness: 0.7,
+                    emissive: 0x000000
+                });
+                
+                const woodMaterial = new THREE.MeshStandardMaterial({ 
+                    color: 0x8b5a2b,
+                    roughness: 0.8,
+                    emissive: 0x000000
+                });
+                
+                const floorMaterial = new THREE.MeshStandardMaterial({ 
+                    color: 0x5d3a1a,
+                    roughness: 0.9,
+                    emissive: 0x000000
+                });
+                
+                const darkWoodMaterial = new THREE.MeshStandardMaterial({ 
+                    color: 0x4a2c1a,
+                    roughness: 0.9,
+                    emissive: 0x000000
+                });
+                
+                const roofMaterial = new THREE.MeshStandardMaterial({ 
+                    color: 0x332211,
+                    roughness: 0.8,
+                    emissive: 0x000000
+                });
                 
                 // Zemin (temel)
-                const ground = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), floorMaterial);
+                const ground = new THREE.Mesh(
+                    new THREE.PlaneGeometry(40, 40),
+                    new THREE.MeshStandardMaterial({ color: 0x2a3a2a, roughness: 0.9 })
+                );
                 ground.rotation.x = -Math.PI / 2;
-                ground.position.y = 0;
+                ground.position.y = -0.1;
                 ground.receiveShadow = true;
                 scene.add(ground);
                 
-                // ----- 1. KAT (GİRİŞ) -----
-                // Ana hol
-                createRoom(-5, 1.5, -5, 10, 3, 10, wallMaterial, floorMaterial, 0);
-                
-                // Kapılar (1. kat)
-                addDoor(-2, 1, -5.2, doorMaterial, 0); // ön kapı
-                addDoor(2, 1, -5.2, doorMaterial, 0);
-                addDoor(-5.2, 1, -2, doorMaterial, Math.PI/2);
-                addDoor(5.2, 1, -2, doorMaterial, Math.PI/2);
-                
-                // Mobilyalar (1. kat)
-                createTable(0, 0.5, -5, 1, 0.2, 2, 0x996633);
-                createChair(-0.8, 0.3, -5.5, 0xAA5555);
-                createChair(0.8, 0.3, -5.5, 0xAA5555);
-                createCabinet(-4, 1, -3, 0xAA8866);
-                createCabinet(4, 1, -3, 0xAA8866);
-                
-                // ----- 2. KAT (MERDİVENLE ÇIKILIR) -----
-                // Merdiven
-                createStairs(-3, 1.5, 2, 4, 1, 2, 0x886644);
-                
-                // 2. kat odaları
-                createRoom(-5, 4.5, -5, 10, 3, 10, wallMaterial, floorMaterial, 2);
-                
-                // Kapılar (2. kat)
-                addDoor(-2, 4, -5.2, doorMaterial, 0);
-                addDoor(2, 4, -5.2, doorMaterial, 0);
-                
-                // Mobilyalar (2. kat)
-                createBed(0, 4.3, -3, 0x774411);
-                createWardrobe(3, 4.5, -2, 0x8B5A2B);
-                createDesk(-3, 4.3, 0, 0x8B5A2B);
-                createBookshelf(-4, 4.8, 2, 0x8B5A2B);
-                
-                // ----- 3. KAT (ÇATI KATI) -----
-                createRoom(-5, 7.5, -5, 10, 3, 10, wallMaterial, floorMaterial, 3);
-                
-                // Kapılar (3. kat)
-                addDoor(-2, 7, -5.2, doorMaterial, 0);
-                addDoor(2, 7, -5.2, doorMaterial, 0);
-                
-                // Mobilyalar (3. kat)
-                createBox(0, 7.3, -2, 0xAA8866);
-                createBox(2, 7.3, 0, 0xAA8866);
-                createBox(-2, 7.3, 2, 0xAA8866);
-                
-                // ----- BODRUM KAT -----
-                createRoom(-5, -1.5, -5, 10, 3, 10, new THREE.MeshStandardMaterial({ color: 0x333333 }), new THREE.MeshStandardMaterial({ color: 0x222222 }), -1);
-                
-                // Bodrum kapıları
-                addDoor(-2, -2, -5.2, new THREE.MeshStandardMaterial({ color: 0x333333 }), 0);
-                
-                // Eşyalar (bodrum)
-                createBarrel(-3, -2, -3, 0x666666);
-                createBarrel(3, -2, -3, 0x666666);
-                createBarrel(0, -2, 2, 0x666666);
-            }
-            
-            function createRoom(x, y, z, w, h, d, wallMat, floorMat, level) {
-                // Zemin
-                const floor = new THREE.Mesh(new THREE.BoxGeometry(w, 0.2, d), floorMat);
-                floor.position.set(x, y - h/2 + 0.1, z);
-                floor.receiveShadow = true;
-                scene.add(floor);
-                
-                // Duvarlar
-                addWall(x, y, z - d/2, w, h, 0.3, wallMat); // arka
-                addWall(x, y, z + d/2, w, h, 0.3, wallMat); // ön
-                addWall(x - w/2, y, z, 0.3, h, d, wallMat); // sol
-                addWall(x + w/2, y, z, 0.3, h, d, wallMat); // sağ
-                
-                // Tavan (üst kat varsa)
-                if (level < 3) {
-                    const ceiling = new THREE.Mesh(new THREE.BoxGeometry(w, 0.2, d), floorMat);
-                    ceiling.position.set(x, y + h/2 - 0.1, z);
-                    ceiling.receiveShadow = true;
-                    scene.add(ceiling);
+                // Çim efekti için küçük yeşil noktalar (opsiyonel)
+                for (let i = 0; i < 200; i++) {
+                    const grass = new THREE.Mesh(
+                        new THREE.ConeGeometry(0.05, 0.1, 4),
+                        new THREE.MeshStandardMaterial({ color: 0x2a5a2a })
+                    );
+                    grass.position.set(Math.random()*30-15, 0, Math.random()*30-15);
+                    grass.castShadow = true;
+                    grass.receiveShadow = true;
+                    scene.add(grass);
                 }
+                
+                // ----- ANA BİNA (3 KAT) -----
+                const mainWidth = 12;
+                const mainDepth = 10;
+                const floorHeight = 3;
+                
+                // 1. KAT DUVARLARI
+                createWall(0, floorHeight/2, -mainDepth/2, mainWidth, floorHeight, 0.4, brickMaterial); // arka
+                createWall(0, floorHeight/2, mainDepth/2, mainWidth, floorHeight, 0.4, brickMaterial); // ön
+                createWall(-mainWidth/2, floorHeight/2, 0, 0.4, floorHeight, mainDepth, brickMaterial); // sol
+                createWall(mainWidth/2, floorHeight/2, 0, 0.4, floorHeight, mainDepth, brickMaterial); // sağ
+                
+                // 1. KAT ZEMİNİ
+                const floor1 = new THREE.Mesh(
+                    new THREE.BoxGeometry(mainWidth, 0.2, mainDepth),
+                    floorMaterial
+                );
+                floor1.position.set(0, 0, 0);
+                floor1.receiveShadow = true;
+                floor1.castShadow = true;
+                scene.add(floor1);
+                
+                // 2. KAT DUVARLARI
+                createWall(0, floorHeight + floorHeight/2, -mainDepth/2, mainWidth, floorHeight, 0.4, brickMaterial);
+                createWall(0, floorHeight + floorHeight/2, mainDepth/2, mainWidth, floorHeight, 0.4, brickMaterial);
+                createWall(-mainWidth/2, floorHeight + floorHeight/2, 0, 0.4, floorHeight, mainDepth, brickMaterial);
+                createWall(mainWidth/2, floorHeight + floorHeight/2, 0, 0.4, floorHeight, mainDepth, brickMaterial);
+                
+                // 2. KAT ZEMİNİ
+                const floor2 = new THREE.Mesh(
+                    new THREE.BoxGeometry(mainWidth, 0.2, mainDepth),
+                    woodMaterial
+                );
+                floor2.position.set(0, floorHeight, 0);
+                floor2.receiveShadow = true;
+                floor2.castShadow = true;
+                scene.add(floor2);
+                
+                // 3. KAT DUVARLARI (çatı katı)
+                createWall(0, floorHeight*2 + floorHeight/2, -mainDepth/2, mainWidth, floorHeight, 0.4, woodMaterial);
+                createWall(0, floorHeight*2 + floorHeight/2, mainDepth/2, mainWidth, floorHeight, 0.4, woodMaterial);
+                createWall(-mainWidth/2, floorHeight*2 + floorHeight/2, 0, 0.4, floorHeight, mainDepth, woodMaterial);
+                createWall(mainWidth/2, floorHeight*2 + floorHeight/2, 0, 0.4, floorHeight, mainDepth, woodMaterial);
+                
+                // 3. KAT ZEMİNİ
+                const floor3 = new THREE.Mesh(
+                    new THREE.BoxGeometry(mainWidth, 0.2, mainDepth),
+                    darkWoodMaterial
+                );
+                floor3.position.set(0, floorHeight*2, 0);
+                floor3.receiveShadow = true;
+                floor3.castShadow = true;
+                scene.add(floor3);
+                
+                // ÇATI
+                const roof = new THREE.Mesh(
+                    new THREE.ConeGeometry(7, 2, 4),
+                    roofMaterial
+                );
+                roof.position.set(0, floorHeight*3, 0);
+                roof.rotation.y = Math.PI/4;
+                roof.castShadow = true;
+                roof.receiveShadow = true;
+                scene.add(roof);
+                
+                // ----- İÇ BÖLMELER (ODALAR) -----
+                
+                // Koridor duvarları (1. kat)
+                createWall(-2, 1.5, 0, 0.3, 3, 4, woodMaterial);
+                createWall(2, 1.5, 0, 0.3, 3, 4, woodMaterial);
+                createWall(0, 1.5, -3, 4, 3, 0.3, woodMaterial);
+                createWall(0, 1.5, 3, 4, 3, 0.3, woodMaterial);
+                
+                // Koridor duvarları (2. kat)
+                createWall(-2, 4.5, 0, 0.3, 3, 4, woodMaterial);
+                createWall(2, 4.5, 0, 0.3, 3, 4, woodMaterial);
+                createWall(0, 4.5, -3, 4, 3, 0.3, woodMaterial);
+                createWall(0, 4.5, 3, 4, 3, 0.3, woodMaterial);
+                
+                // Koridor duvarları (3. kat)
+                createWall(-2, 7.5, 0, 0.3, 3, 4, woodMaterial);
+                createWall(2, 7.5, 0, 0.3, 3, 4, woodMaterial);
+                createWall(0, 7.5, -3, 4, 3, 0.3, woodMaterial);
+                createWall(0, 7.5, 3, 4, 3, 0.3, woodMaterial);
+                
+                // ----- KAPILAR -----
+                const doorMaterial = new THREE.MeshStandardMaterial({ color: 0x5d3a1a });
+                
+                // Giriş kapısı (ön)
+                createDoor(-1.5, 1, 4.9, doorMaterial, 0);
+                createDoor(1.5, 1, 4.9, doorMaterial, 0);
+                
+                // İç kapılar (1. kat)
+                createDoor(-3.5, 1, -1, doorMaterial, Math.PI/2);
+                createDoor(3.5, 1, -1, doorMaterial, Math.PI/2);
+                createDoor(-3.5, 1, 1, doorMaterial, Math.PI/2);
+                createDoor(3.5, 1, 1, doorMaterial, Math.PI/2);
+                
+                // İç kapılar (2. kat)
+                createDoor(-3.5, 4, -1, doorMaterial, Math.PI/2);
+                createDoor(3.5, 4, -1, doorMaterial, Math.PI/2);
+                createDoor(-3.5, 4, 1, doorMaterial, Math.PI/2);
+                createDoor(3.5, 4, 1, doorMaterial, Math.PI/2);
+                
+                // İç kapılar (3. kat)
+                createDoor(-3.5, 7, -1, doorMaterial, Math.PI/2);
+                createDoor(3.5, 7, -1, doorMaterial, Math.PI/2);
+                createDoor(-3.5, 7, 1, doorMaterial, Math.PI/2);
+                createDoor(3.5, 7, 1, doorMaterial, Math.PI/2);
+                
+                // ----- MERDİVENLER -----
+                // 1. kattan 2. kata
+                for (let i = 0; i < 8; i++) {
+                    const step = new THREE.Mesh(
+                        new THREE.BoxGeometry(1.2, 0.2, 0.5),
+                        woodMaterial
+                    );
+                    step.position.set(-4, 0.2 + i*0.35, 3);
+                    step.rotation.y = Math.PI/2;
+                    step.castShadow = true;
+                    step.receiveShadow = true;
+                    scene.add(step);
+                }
+                
+                // 2. kattan 3. kata
+                for (let i = 0; i < 8; i++) {
+                    const step = new THREE.Mesh(
+                        new THREE.BoxGeometry(1.2, 0.2, 0.5),
+                        woodMaterial
+                    );
+                    step.position.set(4, 3.2 + i*0.35, -3);
+                    step.rotation.y = Math.PI/2;
+                    step.castShadow = true;
+                    step.receiveShadow = true;
+                    scene.add(step);
+                }
+                
+                // ----- EŞYALAR -----
+                
+                // Yataklar
+                createBed(-3, 0.3, -2, 0x8b5a2b);
+                createBed(3, 3.3, 2, 0x8b5a2b);
+                createBed(-3, 6.3, -2, 0x8b5a2b);
+                
+                // Dolaplar
+                createCabinet(-2, 0.8, 3, 0x5d3a1a);
+                createCabinet(2, 3.8, -3, 0x5d3a1a);
+                createCabinet(-2, 6.8, 3, 0x5d3a1a);
+                
+                // Masalar
+                createTable(0, 0.5, 0, 2, 0.1, 1.5, 0x8b5a2b);
+                createTable(0, 3.5, 0, 2, 0.1, 1.5, 0x8b5a2b);
+                createTable(0, 6.5, 0, 2, 0.1, 1.5, 0x8b5a2b);
+                
+                // Sandalyeler
+                createChair(-0.8, 0.3, -0.5, 0x5d3a1a);
+                createChair(0.8, 0.3, -0.5, 0x5d3a1a);
+                createChair(-0.8, 3.3, -0.5, 0x5d3a1a);
+                createChair(0.8, 3.3, -0.5, 0x5d3a1a);
+                
+                // Kitaplıklar
+                createBookshelf(-4, 1.5, -3, 0x8b5a2b);
+                createBookshelf(4, 4.5, 3, 0x8b5a2b);
+                createBookshelf(-4, 7.5, -3, 0x8b5a2b);
+                
+                // Lambalar
+                createLamp(-2, 2.5, 2, 0xffaa33);
+                createLamp(2, 5.5, -2, 0xffaa33);
+                createLamp(-2, 8.5, 2, 0xffaa33);
+                
+                // Halılar
+                createCarpet(0, 0.05, 0, 2, 1, 0xaa5533);
+                createCarpet(0, 3.05, 0, 2, 1, 0xaa5533);
+                createCarpet(0, 6.05, 0, 2, 1, 0xaa5533);
+                
+                // Tablolar (duvarda)
+                createPainting(-4.8, 2, 0, 1.5, 1, 0xffaa88);
+                createPainting(4.8, 5, 0, 1.5, 1, 0xffaa88);
+                
+                // Banyo (bodrum katı)
+                createBathroom();
             }
             
-            function addWall(x, y, z, width, height, depth, material) {
-                const wall = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), material);
+            function createWall(x, y, z, w, h, d, material) {
+                const wall = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), material);
                 wall.position.set(x, y, z);
                 wall.castShadow = true;
                 wall.receiveShadow = true;
                 scene.add(wall);
             }
             
-            function addDoor(x, y, z, material, rotation) {
-                const doorMesh = new THREE.Mesh(new THREE.BoxGeometry(1.2, 2, 0.2), material);
-                doorMesh.position.set(x, y, z);
-                doorMesh.rotation.y = rotation;
-                doorMesh.castShadow = true;
-                doorMesh.receiveShadow = true;
-                scene.add(doorMesh);
+            function createDoor(x, y, z, material, rotation) {
+                const door = new THREE.Mesh(new THREE.BoxGeometry(1.2, 2.2, 0.2), material);
+                door.position.set(x, y, z);
+                door.rotation.y = rotation;
+                door.castShadow = true;
+                door.receiveShadow = true;
+                scene.add(door);
                 
-                const knob = new THREE.Mesh(new THREE.SphereGeometry(0.1), new THREE.MeshStandardMaterial({ color: 0xffaa00 }));
-                knob.position.set(x + Math.cos(rotation)*0.6, y, z + Math.sin(rotation)*0.6);
+                const knob = new THREE.Mesh(new THREE.SphereGeometry(0.08), new THREE.MeshStandardMaterial({ color: 0xffaa00 }));
+                knob.position.set(
+                    x + Math.cos(rotation) * 0.6,
+                    y,
+                    z + Math.sin(rotation) * 0.6
+                );
                 knob.castShadow = true;
                 scene.add(knob);
+            }
+            
+            function createBed(x, y, z, color) {
+                const base = new THREE.Mesh(new THREE.BoxGeometry(2, 0.4, 1.5), new THREE.MeshStandardMaterial({ color: color }));
+                base.position.set(x, y + 0.2, z);
+                base.castShadow = true;
+                base.receiveShadow = true;
+                scene.add(base);
                 
-                doors.push({ mesh: doorMesh, knob: knob, open: false, rotation: rotation });
-            }
-            
-            function createTable(x, y, z, w, h, d, color) {
-                const table = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new THREE.MeshStandardMaterial({ color: color }));
-                table.position.set(x, y, z);
-                table.castShadow = true;
-                table.receiveShadow = true;
-                scene.add(table);
-            }
-            
-            function createChair(x, y, z, color) {
-                const chair = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.8, 0.6), new THREE.MeshStandardMaterial({ color: color }));
-                chair.position.set(x, y, z);
-                chair.castShadow = true;
-                chair.receiveShadow = true;
-                scene.add(chair);
+                const mattress = new THREE.Mesh(new THREE.BoxGeometry(1.9, 0.3, 1.4), new THREE.MeshStandardMaterial({ color: 0xaa8866 }));
+                mattress.position.set(x, y + 0.55, z);
+                mattress.castShadow = true;
+                mattress.receiveShadow = true;
+                scene.add(mattress);
+                
+                const pillow = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.2, 0.4), new THREE.MeshStandardMaterial({ color: 0xccaa88 }));
+                pillow.position.set(x - 0.5, y + 0.7, z);
+                pillow.castShadow = true;
+                pillow.receiveShadow = true;
+                scene.add(pillow);
             }
             
             function createCabinet(x, y, z, color) {
                 const cabinet = new THREE.Mesh(new THREE.BoxGeometry(1.2, 2, 0.8), new THREE.MeshStandardMaterial({ color: color }));
-                cabinet.position.set(x, y, z);
+                cabinet.position.set(x, y + 1, z);
                 cabinet.castShadow = true;
                 cabinet.receiveShadow = true;
                 scene.add(cabinet);
-            }
-            
-            function createStairs(x, y, z, width, height, depth, color) {
-                for (let i = 0; i < 5; i++) {
-                    const step = new THREE.Mesh(new THREE.BoxGeometry(width, height/5, depth), new THREE.MeshStandardMaterial({ color: color }));
-                    step.position.set(x + i*0.5, y + i*0.3, z);
-                    step.castShadow = true;
-                    step.receiveShadow = true;
-                    scene.add(step);
-                }
-            }
-            
-            function createBed(x, y, z, color) {
-                const bedBase = new THREE.Mesh(new THREE.BoxGeometry(2, 0.4, 1.5), new THREE.MeshStandardMaterial({ color: color }));
-                bedBase.position.set(x, y, z);
-                bedBase.castShadow = true;
-                bedBase.receiveShadow = true;
-                scene.add(bedBase);
                 
-                const mattress = new THREE.Mesh(new THREE.BoxGeometry(1.9, 0.3, 1.4), new THREE.MeshStandardMaterial({ color: 0xAA8866 }));
-                mattress.position.set(x, y+0.35, z);
-                mattress.castShadow = true;
-                mattress.receiveShadow = true;
-                scene.add(mattress);
+                const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.2), new THREE.MeshStandardMaterial({ color: 0xffaa00 }));
+                handle.position.set(x + 0.5, y + 1, z + 0.4);
+                handle.rotation.z = Math.PI/2;
+                handle.castShadow = true;
+                scene.add(handle);
             }
             
-            function createWardrobe(x, y, z, color) {
-                const wardrobe = new THREE.Mesh(new THREE.BoxGeometry(1.5, 2.5, 0.8), new THREE.MeshStandardMaterial({ color: color }));
-                wardrobe.position.set(x, y, z);
-                wardrobe.castShadow = true;
-                wardrobe.receiveShadow = true;
-                scene.add(wardrobe);
+            function createTable(x, y, z, w, h, d, color) {
+                const top = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new THREE.MeshStandardMaterial({ color: color }));
+                top.position.set(x, y + h/2, z);
+                top.castShadow = true;
+                top.receiveShadow = true;
+                scene.add(top);
+                
+                const leg1 = new THREE.Mesh(new THREE.BoxGeometry(0.1, y, 0.1), new THREE.MeshStandardMaterial({ color: color }));
+                leg1.position.set(x - w/3, y/2, z - d/3);
+                leg1.castShadow = true;
+                leg1.receiveShadow = true;
+                scene.add(leg1);
+                
+                const leg2 = new THREE.Mesh(new THREE.BoxGeometry(0.1, y, 0.1), new THREE.MeshStandardMaterial({ color: color }));
+                leg2.position.set(x + w/3, y/2, z - d/3);
+                leg2.castShadow = true;
+                leg2.receiveShadow = true;
+                scene.add(leg2);
+                
+                const leg3 = new THREE.Mesh(new THREE.BoxGeometry(0.1, y, 0.1), new THREE.MeshStandardMaterial({ color: color }));
+                leg3.position.set(x - w/3, y/2, z + d/3);
+                leg3.castShadow = true;
+                leg3.receiveShadow = true;
+                scene.add(leg3);
+                
+                const leg4 = new THREE.Mesh(new THREE.BoxGeometry(0.1, y, 0.1), new THREE.MeshStandardMaterial({ color: color }));
+                leg4.position.set(x + w/3, y/2, z + d/3);
+                leg4.castShadow = true;
+                leg4.receiveShadow = true;
+                scene.add(leg4);
             }
             
-            function createDesk(x, y, z, color) {
-                const desk = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.8, 0.8), new THREE.MeshStandardMaterial({ color: color }));
-                desk.position.set(x, y, z);
-                desk.castShadow = true;
-                desk.receiveShadow = true;
-                scene.add(desk);
+            function createChair(x, y, z, color) {
+                const seat = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.1, 0.6), new THREE.MeshStandardMaterial({ color: color }));
+                seat.position.set(x, y + 0.3, z);
+                seat.castShadow = true;
+                seat.receiveShadow = true;
+                scene.add(seat);
+                
+                const back = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.8, 0.1), new THREE.MeshStandardMaterial({ color: color }));
+                back.position.set(x, y + 0.7, z - 0.25);
+                back.castShadow = true;
+                back.receiveShadow = true;
+                scene.add(back);
+                
+                const leg1 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.4, 0.1), new THREE.MeshStandardMaterial({ color: color }));
+                leg1.position.set(x - 0.2, y + 0.2, z - 0.2);
+                leg1.castShadow = true;
+                leg1.receiveShadow = true;
+                scene.add(leg1);
+                
+                const leg2 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.4, 0.1), new THREE.MeshStandardMaterial({ color: color }));
+                leg2.position.set(x + 0.2, y + 0.2, z - 0.2);
+                leg2.castShadow = true;
+                leg2.receiveShadow = true;
+                scene.add(leg2);
+                
+                const leg3 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.4, 0.1), new THREE.MeshStandardMaterial({ color: color }));
+                leg3.position.set(x - 0.2, y + 0.2, z + 0.2);
+                leg3.castShadow = true;
+                leg3.receiveShadow = true;
+                scene.add(leg3);
+                
+                const leg4 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.4, 0.1), new THREE.MeshStandardMaterial({ color: color }));
+                leg4.position.set(x + 0.2, y + 0.2, z + 0.2);
+                leg4.castShadow = true;
+                leg4.receiveShadow = true;
+                scene.add(leg4);
             }
             
             function createBookshelf(x, y, z, color) {
-                const shelf = new THREE.Mesh(new THREE.BoxGeometry(1, 2.5, 0.5), new THREE.MeshStandardMaterial({ color: color }));
-                shelf.position.set(x, y, z);
+                const shelf = new THREE.Mesh(new THREE.BoxGeometry(1.2, 2.5, 0.5), new THREE.MeshStandardMaterial({ color: color }));
+                shelf.position.set(x, y + 1.25, z);
                 shelf.castShadow = true;
                 shelf.receiveShadow = true;
                 scene.add(shelf);
+                
+                // Kitaplar
+                for (let i = 0; i < 5; i++) {
+                    const book = new THREE.Mesh(
+                        new THREE.BoxGeometry(0.15, 0.6, 0.3),
+                        new THREE.MeshStandardMaterial({ color: Math.random() * 0xffffff })
+                    );
+                    book.position.set(x - 0.3 + i*0.15, y + 1.8, z + 0.2);
+                    book.castShadow = true;
+                    book.receiveShadow = true;
+                    scene.add(book);
+                }
             }
             
-            function createBox(x, y, z, color) {
-                const box = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.8), new THREE.MeshStandardMaterial({ color: color }));
-                box.position.set(x, y, z);
-                box.castShadow = true;
-                box.receiveShadow = true;
-                scene.add(box);
+            function createLamp(x, y, z, color) {
+                const base = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.4, 0.2), new THREE.MeshStandardMaterial({ color: 0x886644 }));
+                base.position.set(x, y - 0.1, z);
+                base.castShadow = true;
+                base.receiveShadow = true;
+                scene.add(base);
+                
+                const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.8), new THREE.MeshStandardMaterial({ color: 0xaaaaaa }));
+                pole.position.set(x, y + 0.3, z);
+                pole.castShadow = true;
+                pole.receiveShadow = true;
+                scene.add(pole);
+                
+                const shade = new THREE.Mesh(new THREE.ConeGeometry(0.4, 0.3, 8), new THREE.MeshStandardMaterial({ color: 0xeeddcc }));
+                shade.position.set(x, y + 0.7, z);
+                shade.castShadow = true;
+                shade.receiveShadow = true;
+                scene.add(shade);
+                
+                const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.1), new THREE.MeshStandardMaterial({ color: color, emissive: 0x442200 }));
+                bulb.position.set(x, y + 0.6, z);
+                bulb.castShadow = true;
+                scene.add(bulb);
             }
             
-            function createBarrel(x, y, z, color) {
-                const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.6, 1), new THREE.MeshStandardMaterial({ color: color }));
-                barrel.position.set(x, y+0.5, z);
-                barrel.castShadow = true;
-                barrel.receiveShadow = true;
-                scene.add(barrel);
+            function createCarpet(x, y, z, w, d, color) {
+                const carpet = new THREE.Mesh(
+                    new THREE.BoxGeometry(w, 0.05, d),
+                    new THREE.MeshStandardMaterial({ color: color })
+                );
+                carpet.position.set(x, y, z);
+                carpet.receiveShadow = true;
+                scene.add(carpet);
             }
             
-            // -------------------- GRANNY --------------------
-            function createGranny() {
-                const grannyGroup = new THREE.Group();
+            function createPainting(x, y, z, w, h, color) {
+                const frame = new THREE.Mesh(
+                    new THREE.BoxGeometry(w + 0.1, h + 0.1, 0.05),
+                    new THREE.MeshStandardMaterial({ color: 0x8b4513 })
+                );
+                frame.position.set(x, y, z);
+                frame.castShadow = true;
+                frame.receiveShadow = true;
+                scene.add(frame);
                 
-                // Elbise
-                const dress = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.6, 1.5), new THREE.MeshStandardMaterial({ color: 0x220000 }));
-                dress.position.y = 0.75;
-                dress.castShadow = true;
-                dress.receiveShadow = true;
-                grannyGroup.add(dress);
-                
-                // Kafa
-                const head = new THREE.Mesh(new THREE.SphereGeometry(0.3), new THREE.MeshStandardMaterial({ color: 0xaa8888 }));
-                head.position.y = 1.6;
-                head.castShadow = true;
-                head.receiveShadow = true;
-                grannyGroup.add(head);
-                
-                // Gözler (kırmızı)
-                const eyeMat = new THREE.MeshStandardMaterial({ color: 0xff0000, emissive: 0x330000 });
-                const eye1 = new THREE.Mesh(new THREE.SphereGeometry(0.1), eyeMat);
-                eye1.position.set(-0.12, 1.65, 0.25);
-                grannyGroup.add(eye1);
-                
-                const eye2 = new THREE.Mesh(new THREE.SphereGeometry(0.1), eyeMat);
-                eye2.position.set(0.12, 1.65, 0.25);
-                grannyGroup.add(eye2);
-                
-                // Saç
-                const hair = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.2), new THREE.MeshStandardMaterial({ color: 0x666666 }));
-                hair.position.y = 1.8;
-                hair.castShadow = true;
-                grannyGroup.add(hair);
-                
-                granny = grannyGroup;
-                granny.position.set(10, 0, 10);
-                granny.castShadow = true;
-                granny.receiveShadow = true;
-                scene.add(granny);
+                const canvas = new THREE.Mesh(
+                    new THREE.BoxGeometry(w, h, 0.02),
+                    new THREE.MeshStandardMaterial({ color: color })
+                );
+                canvas.position.set(x, y, z + 0.03);
+                canvas.castShadow = true;
+                canvas.receiveShadow = true;
+                scene.add(canvas);
             }
             
-            // -------------------- PUZZLE SİSTEMİ --------------------
-            function createPuzzles() {
-                // Örnek puzzle: Anahtar bul
-                puzzles.push({
-                    type: 'key',
-                    position: { x: 4, y: 0.5, z: 4 },
-                    solved: false,
-                    hint: 'Bir anahtar bulman lazım...'
-                });
+            function createBathroom() {
+                // Bodrum katında banyo
+                const bathPos = { x: 0, y: -2.5, z: 0 };
                 
-                // Çekmecede anahtar
-                puzzles.push({
-                    type: 'drawer',
-                    position: { x: -3, y: 1, z: 0 },
-                    solved: false,
-                    hint: 'Çekmeceyi açmayı dene...'
-                });
+                // Küvet
+                const tub = new THREE.Mesh(
+                    new THREE.BoxGeometry(2, 0.8, 1.2),
+                    new THREE.MeshStandardMaterial({ color: 0xcccccc })
+                );
+                tub.position.set(bathPos.x, bathPos.y + 0.4, bathPos.z);
+                tub.castShadow = true;
+                tub.receiveShadow = true;
+                scene.add(tub);
                 
-                // Gizli geçit
-                puzzles.push({
-                    type: 'secret',
-                    position: { x: 0, y: 4, z: -4 },
-                    solved: false,
-                    hint: 'Bu duvar çok soğuk...'
-                });
+                // Klozet
+                const toilet = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.4, 0.5, 0.5),
+                    new THREE.MeshStandardMaterial({ color: 0xffffff })
+                );
+                toilet.position.set(bathPos.x + 1.5, bathPos.y + 0.25, bathPos.z - 1);
+                toilet.castShadow = true;
+                toilet.receiveShadow = true;
+                scene.add(toilet);
+                
+                // Lavabo
+                const sink = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.5, 0.6, 0.3),
+                    new THREE.MeshStandardMaterial({ color: 0xffffff })
+                );
+                sink.position.set(bathPos.x - 1.5, bathPos.y + 0.15, bathPos.z - 1);
+                sink.castShadow = true;
+                sink.receiveShadow = true;
+                scene.add(sink);
             }
             
             // -------------------- OYUN DÖNGÜSÜ --------------------
@@ -688,136 +797,16 @@
                     let newZ = player.z + (moveX * sin + moveZ * cos);
                     
                     // Sınırlar
-                    if (Math.abs(newX) < 12 && Math.abs(newZ) < 12) {
+                    if (Math.abs(newX) < 8 && Math.abs(newZ) < 8) {
                         player.x = newX;
                         player.z = newZ;
                     }
                     
                     camera.position.x = player.x;
                     camera.position.z = player.z;
-                    
-                    // Gürültü
-                    noiseLevel = Math.min(100, noiseLevel + 2);
-                } else {
-                    noiseLevel = Math.max(0, noiseLevel - 1);
                 }
                 
                 torchLight.position.copy(camera.position);
-                
-                // Granny AI
-                updateGranny();
-                
-                // Puzzle kontrolleri
-                checkPuzzles();
-            }
-            
-            function updateGranny() {
-                if (!granny) return;
-                
-                // Oyuncuya mesafe
-                const dx = player.x - granny.position.x;
-                const dz = player.z - granny.position.z;
-                const dist = Math.sqrt(dx*dx + dz*dz);
-                
-                // Gürültüye tepki
-                if (noiseLevel > 30 && dist < 15) {
-                    grannyState = 'chase';
-                } else if (dist < 10) {
-                    grannyState = 'chase';
-                } else {
-                    grannyState = 'idle';
-                }
-                
-                if (grannyState === 'chase') {
-                    // Granny oyuncuya yaklaşır
-                    const angle = Math.atan2(dz, dx);
-                    granny.position.x += Math.cos(angle) * grannySpeed;
-                    granny.position.z += Math.sin(angle) * grannySpeed;
-                    
-                    // Granny oyuncuya baksın
-                    granny.lookAt(camera.position);
-                }
-                
-                // Çarpışma (Granny yakalarsa)
-                if (dist < 1.5) {
-                    // Jumpscare ve oyun sonu
-                    alert('GRANNY SENİ YAKALADI!');
-                    resetGame();
-                }
-            }
-            
-            function checkPuzzles() {
-                puzzles.forEach(p => {
-                    const dist = Math.sqrt(
-                        (player.x - p.position.x)**2 + 
-                        (player.z - p.position.z)**2
-                    );
-                    
-                    if (dist < 2 && !p.solved) {
-                        document.getElementById('puzzle-hint').style.display = 'block';
-                        document.getElementById('puzzle-hint').textContent = p.hint;
-                    } else {
-                        document.getElementById('puzzle-hint').style.display = 'none';
-                    }
-                });
-            }
-            
-            function interact() {
-                // Kapı aç/kapa
-                doors.forEach(door => {
-                    const dist = camera.position.distanceTo(door.mesh.position);
-                    if (dist < 3) {
-                        door.open = !door.open;
-                        door.mesh.rotation.y = door.open ? door.rotation + Math.PI/2 : door.rotation;
-                    }
-                });
-                
-                // Puzzle çöz
-                puzzles.forEach(p => {
-                    const dist = Math.sqrt(
-                        (player.x - p.position.x)**2 + 
-                        (player.z - p.position.z)**2
-                    );
-                    
-                    if (dist < 2 && !p.solved) {
-                        p.solved = true;
-                        
-                        if (p.type === 'key') {
-                            inventory[0] = '🔑';
-                            document.getElementById('slot0').textContent = '🔑';
-                            alert('Anahtarı buldun! Artık bodrum kapısını açabilirsin.');
-                        } else if (p.type === 'drawer') {
-                            inventory[1] = '🔨';
-                            document.getElementById('slot1').textContent = '🔨';
-                            alert('Çekmecede çekiç buldun!');
-                        } else if (p.type === 'secret') {
-                            alert('Gizli geçidi buldun! Buradan bodruma inebilirsin.');
-                        }
-                    }
-                });
-            }
-            
-            function resetGame() {
-                player.x = 0;
-                player.z = 5;
-                camera.position.set(0, 1.6, 5);
-                granny.position.set(10, 0, 10);
-                grannyState = 'idle';
-            }
-            
-            function startTimer() {
-                setInterval(() => {
-                    timeLeft--;
-                    if (timeLeft <= 0) {
-                        alert('TEBRİKLER! 10 DAKİKA HAYATTA KALDIN!');
-                        resetGame();
-                        timeLeft = 600;
-                    }
-                    
-                    const mins = Math.floor(timeLeft / 60);
-                    const secs = timeLeft % 60;
-                    document.getElementById('status').innerHTML = `🏚️ GRANNY EVİ | Kalan: ${mins}:${secs.toString().padStart(2, '0')}`;
-                }, 1000);
             }
             
             function animate() {
@@ -831,13 +820,6 @@
                 camera.updateProjectionMatrix();
                 renderer.setSize(window.innerWidth, window.innerHeight);
             }
-            
-            // E tuşu ile etkileşim (PC)
-            document.addEventListener('keydown', (e) => {
-                if (e.key.toLowerCase() === 'e') {
-                    interact();
-                }
-            });
         })();
     </script>
 </body>
