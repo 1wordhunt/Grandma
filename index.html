@@ -3,173 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Granny Pro V1.6 - Construction Mode</title>
+    <title>Granny Pro V1.8 - Developer: SNOWY DEXRY WEXRY</title>
     <style>
-        body { margin: 0; overflow: hidden; background-color: #87CEEB; touch-action: none; user-select: none; }
+        body { margin: 0; overflow: hidden; background-color: #0a0a0a; touch-action: none; user-select: none; }
         #overlay {
-            position: absolute; top: 10px; left: 10px; color: #000; font-family: sans-serif;
-            pointer-events: none; font-weight: bold; z-index: 10;
+            position: absolute; top: 10px; left: 10px; color: #fff; font-family: sans-serif;
+            pointer-events: none; text-shadow: 2px 2px 4px #000; z-index: 10; font-size: 14px;
         }
     </style>
 </head>
 <body>
-    <div id="overlay">GRANNY PRO V1.6 - DEVELOPER: SNOWY DEXRY WEXRY (Light Mode)</div>
+    <div id="overlay">GRANNY PRO V1.8 - DEVELOPER: SNOWY DEXRY WEXRY <br> (Kapılara yaklaşınca otomatik açılır)</div>
 
     <script type="module">
         import * as THREE from 'https://cdn.skypack.dev/three@0.136.0';
 
-        // --- SAHNE VE AYDINLATMA (Karanlık Kaldırıldı) ---
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x87CEEB); // Gökyüzü mavisi aydınlık tema
+        scene.background = new THREE.Color(0x0a0a0a);
         
-        const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.05, 1000);
+        const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.05, 100);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
         document.body.appendChild(renderer.domElement);
 
-        // Güçlü Aydınlatma
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7); 
-        scene.add(ambientLight);
-        const sunLight = new THREE.DirectionalLight(0xffffff, 0.8);
-        sunLight.position.set(5, 10, 7);
-        scene.add(sunLight);
+        // --- IŞIKLANDIRMA (V1.7 Korundu) ---
+        scene.add(new THREE.AmbientLight(0xffffff, 0.25));
+        const pointLight = new THREE.PointLight(0xffffff, 0.9, 12); 
+        camera.add(pointLight);
+        scene.add(camera);
+
+        // --- SES SİSTEMİ (AudioContext) ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(freq, type, duration) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        }
 
         // --- MATERYALLER ---
         const loader = new THREE.TextureLoader();
         const wallTex = loader.load('https://threejs.org/examples/textures/brick_diffuse.jpg');
-        wallTex.wrapS = wallTex.wrapT = THREE.RepeatWrapping;
-        wallTex.repeat.set(2, 1);
-        
-        const wallMat = new THREE.MeshStandardMaterial({ map: wallTex });
-        const floorMat = new THREE.MeshStandardMaterial({ color: 0x444444 });
-        const stairMat = new THREE.MeshStandardMaterial({ color: 0x3d2b1a });
+        const wallMat = new THREE.MeshStandardMaterial({ map: wallTex, color: 0x444444 });
+        const doorMat = new THREE.MeshStandardMaterial({ color: 0x3d2b1a });
 
-        const collidableObjects = [];
+        const collidables = [];
+        const doors = [];
 
-        // --- YARDIMCI FONKSİYONLAR ---
-        function createBox(w, h, d, x, y, z, mat, collidable = true) {
-            const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
-            mesh.position.set(x, y, z);
-            scene.add(mesh);
-            if(collidable) collidableObjects.push(mesh);
-            return mesh;
+        function createBox(w, h, d, x, y, z, mat, col = true) {
+            const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+            m.position.set(x, y, z);
+            scene.add(m);
+            if(col) collidables.push(m);
+            return m;
         }
 
-        // --- GERÇEKÇİ MERDİVEN YAPICI ---
-        function createStairs(startX, startY, startZ, floorHeight) {
-            const stepCount = 12;
-            const stepHeight = floorHeight / stepCount;
-            const stepDepth = 0.4;
-            const stepWidth = 2.5;
-
-            for(let i = 0; i < stepCount; i++) {
-                createBox(
-                    stepWidth, stepHeight, stepDepth,
-                    startX, 
-                    startY + (i * stepHeight) + (stepHeight / 2), 
-                    startZ - (i * stepDepth),
-                    stairMat
-                );
-            }
+        // --- KAPI SİSTEMİ ---
+        function createDoor(x, y, z) {
+            const doorGroup = new THREE.Group();
+            const doorWing = new THREE.Mesh(new THREE.BoxGeometry(2.5, 3.5, 0.2), doorMat);
+            doorWing.position.set(1.25, 0, 0); // Menteşe ekseni için kaydırma
+            doorGroup.add(doorWing);
+            doorGroup.position.set(x - 1.25, y + 1.75, z);
+            scene.add(doorGroup);
+            
+            const doorObj = { 
+                mesh: doorGroup, 
+                open: false, 
+                angle: 0,
+                baseX: x, baseZ: z
+            };
+            doors.push(doorObj);
+            collidables.push(doorWing);
         }
 
-        // --- EV İNŞASI ---
+        // --- EV İNŞASI (V1.7 Tasarımı) ---
         for(let i=0; i<3; i++) {
             const y = i * 4;
-            // Kat Zemini
-            createBox(20, 0.2, 20, 0, y, 0, floorMat, false);
-            
-            // Dış Duvarlar
-            createBox(20, 4, 0.4, 0, y + 2, -10, wallMat);
-            createBox(20, 4, 0.4, 0, y + 2, 10, wallMat);
-            createBox(0.4, 4, 20, -10, y + 2, 0, wallMat);
-            createBox(0.4, 4, 20, 10, y + 2, 0, wallMat);
-
-            // Kapılı İç Duvar (Örnek)
-            if(i < 2) {
-                // Sol kanat duvar
-                createBox(7, 4, 0.2, -5, y + 2, 0, wallMat);
-                // Sağ kanat duvar
-                createBox(7, 4, 0.2, 5, y + 2, 0, wallMat);
-                // Kapı üstü kiriş (Kapı boşluğu ortada)
-                createBox(3, 1, 0.2, 0, y + 3.5, 0, wallMat);
-            }
+            createBox(20, 0.1, 20, 0, y, 0, new THREE.MeshStandardMaterial({color:0x111111}), false);
+            createBox(20, 4, 0.5, 0, y+2, -10, wallMat);
+            createBox(20, 4, 0.5, 0, y+2, 10, wallMat);
+            createBox(0.5, 4, 20, -10, y+2, 0, wallMat);
+            createBox(0.5, 4, 20, 10, y+2, 0, wallMat);
+            // Odalar
+            createBox(8, 4, 0.2, -6, y+2, 0, wallMat);
+            createBox(8, 4, 0.2, 6, y+2, 0, wallMat);
+            createBox(4, 1, 0.2, 0, y+3.5, 0, wallMat);
+            // Kapılar
+            createDoor(0, y, 0);
         }
 
-        // Merdivenleri Yerleştir (Katlar Arası)
-        createStairs(7, 0, 5, 4); // 0 -> 1. Kat
-        createStairs(-7, 4, 5, 4); // 1 -> 2. Kat
+        // --- MERDİVEN (V1.7 Fizikli) ---
+        function addStairs(x, y, z) {
+            for(let i=0; i<12; i++) {
+                const s = createBox(3, 0.35, 0.5, x, y + i*0.33, z - i*0.4, wallMat);
+            }
+            const ramp = createBox(3, 0.1, 6, x, y+2, z-2, new THREE.MeshBasicMaterial({visible:false}));
+            ramp.rotation.x = -0.7;
+        }
+        addStairs(7, 0, 5);
 
         // --- KONTROLLER ---
         let moveTouchId = null, lookTouchId = null;
         let moveStart = new THREE.Vector2(), moveCurrent = new THREE.Vector2();
         let lookLast = new THREE.Vector2();
-        let yaw = 0, pitch = 0;
-        let velocity = new THREE.Vector3();
+        let yaw = 0, pitch = 0, vel = new THREE.Vector3();
+        let stepTimer = 0;
 
-        window.addEventListener('touchstart', (e) => {
-            for (let t of e.changedTouches) {
-                if (t.clientX < window.innerWidth / 2) {
-                    moveTouchId = t.identifier;
-                    moveStart.set(t.clientX, t.clientY);
-                    moveCurrent.set(t.clientX, t.clientY);
-                } else {
-                    lookTouchId = t.identifier;
-                    lookLast.set(t.clientX, t.clientY);
-                }
+        window.addEventListener('touchstart', e => {
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            for(let t of e.changedTouches) {
+                if(t.clientX < window.innerWidth/2) { moveTouchId=t.identifier; moveStart.set(t.clientX, t.clientY); moveCurrent.set(t.clientX, t.clientY); }
+                else { lookTouchId=t.identifier; lookLast.set(t.clientX, t.clientY); }
             }
         });
 
-        window.addEventListener('touchmove', (e) => {
-            for (let t of e.changedTouches) {
-                if (t.identifier === moveTouchId) {
-                    moveCurrent.set(t.clientX, t.clientY);
-                } else if (t.identifier === lookTouchId) {
+        window.addEventListener('touchmove', e => {
+            for(let t of e.changedTouches) {
+                if(t.identifier === moveTouchId) moveCurrent.set(t.clientX, t.clientY);
+                else if(t.identifier === lookTouchId) {
                     yaw -= (t.clientX - lookLast.x) * 0.004;
                     pitch -= (t.clientY - lookLast.y) * 0.004;
-                    pitch = Math.max(-1.45, Math.min(1.45, pitch));
+                    pitch = Math.max(-1.4, Math.min(1.4, pitch));
                     lookLast.set(t.clientX, t.clientY);
                 }
             }
         });
 
-        window.addEventListener('touchend', (e) => {
-            for (let t of e.changedTouches) {
-                if (t.identifier === moveTouchId) moveTouchId = null;
-                if (t.identifier === lookTouchId) lookTouchId = null;
+        window.addEventListener('touchend', e => {
+            for(let t of e.changedTouches) {
+                if(t.identifier === moveTouchId) moveTouchId = null;
+                if(t.identifier === lookTouchId) lookTouchId = null;
             }
         });
 
-        camera.position.set(0, 1.7, 8);
+        camera.position.set(0, 1.7, 5);
 
         function animate() {
             requestAnimationFrame(animate);
             camera.quaternion.setFromEuler(new THREE.Euler(pitch, yaw, 0, 'YXZ'));
 
             if (moveTouchId !== null) {
-                const delta = moveCurrent.clone().sub(moveStart);
-                const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
-                const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
-                forward.y = 0; right.y = 0;
-                forward.normalize(); right.normalize();
+                const d = moveCurrent.clone().sub(moveStart);
+                const fwd = new THREE.Vector3(0,0,-1).applyQuaternion(camera.quaternion);
+                const rgt = new THREE.Vector3(1,0,0).applyQuaternion(camera.quaternion);
+                fwd.y = 0; rgt.y = 0; fwd.normalize(); rgt.normalize();
 
-                let nextVel = velocity.clone();
-                nextVel.addScaledVector(forward, -delta.y * 0.00008);
-                nextVel.addScaledVector(right, delta.x * 0.00008);
+                let nV = vel.clone();
+                nV.addScaledVector(fwd, -d.y * 0.00007);
+                nV.addScaledVector(rgt, d.x * 0.00007);
 
-                const playerRay = new THREE.Raycaster(camera.position, nextVel.clone().normalize(), 0, 0.7);
-                const hits = playerRay.intersectObjects(collidableObjects);
-                
-                if (hits.length === 0) {
-                    velocity.copy(nextVel);
-                } else {
-                    velocity.set(0,0,0);
-                }
+                const ray = new THREE.Raycaster(camera.position, nV.clone().normalize(), 0, 0.7);
+                if(ray.intersectObjects(collidables).length === 0) {
+                    vel.copy(nV);
+                    // Adım Sesi Simülasyonu
+                    stepTimer += vel.length();
+                    if(stepTimer > 0.3) {
+                        playSound(60, 'sine', 0.1); // Bas sesli adım
+                        stepTimer = 0;
+                    }
+                } else { vel.set(0,0,0); }
             }
-            
-            camera.position.add(velocity);
-            velocity.multiplyScalar(0.85); 
+
+            // Kapı Etkileşimi (Yaklaşınca Açılma)
+            doors.forEach(d => {
+                const dist = camera.position.distanceTo(new THREE.Vector3(d.baseX, camera.position.y, d.baseZ));
+                if(dist < 3) {
+                    if(!d.open) { playSound(400, 'sawtooth', 0.2); d.open = true; } // Gıcırtı sesi
+                    d.angle = THREE.MathUtils.lerp(d.angle, -Math.PI/2, 0.1);
+                } else {
+                    d.angle = THREE.MathUtils.lerp(d.angle, 0, 0.1);
+                    if(d.open && d.angle > -0.1) d.open = false;
+                }
+                d.mesh.rotation.y = d.angle;
+            });
+
+            if(vel.length() > 0.05) vel.setLength(0.05);
+            camera.position.add(vel);
+            vel.multiplyScalar(0.85);
             renderer.render(scene, camera);
         }
         animate();
