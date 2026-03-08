@@ -1,153 +1,146 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Countryball Soccer Mobile</title>
+    <title>Razel 3D Countryball Soccer</title>
     <style>
-        body { margin: 0; padding: 0; background: #2ecc71; font-family: sans-serif; overflow: hidden; touch-action: none; }
-        #ui { position: absolute; top: 10px; width: 100%; text-align: center; color: white; font-size: 20px; font-weight: bold; pointer-events: none; }
-        canvas { display: block; background: #27ae60; }
+        body { margin: 0; overflow: hidden; background: #111; font-family: 'Segoe UI', sans-serif; }
+        #ui { position: absolute; top: 10px; width: 100%; text-align: center; color: white; pointer-events: none; text-shadow: 2px 2px 5px black; }
         
-        /* Mobil Kontroller */
-        .controls { position: absolute; bottom: 30px; width: 100%; display: flex; justify-content: space-between; padding: 0 30px; box-sizing: border-box; }
-        .joystick-zone { width: 120px; height: 120px; background: rgba(255,255,255,0.2); border-radius: 50%; position: relative; }
-        #joystick { width: 50px; height: 50px; background: white; border-radius: 50%; position: absolute; top: 35px; left: 35px; }
-        #shoot-btn { width: 80px; height: 80px; background: #e74c3c; border: 4px solid white; border-radius: 50%; color: white; font-weight: bold; display: flex; align-items: center; justify-content: center; }
+        /* Mobil Butonlar */
+        .controls { position: absolute; bottom: 20px; width: 100%; display: flex; justify-content: space-around; padding: 0 10px; box-sizing: border-box; }
+        .btn { 
+            width: 70px; height: 70px; background: rgba(0,0,0,0.6); border: 2px solid white; 
+            border-radius: 50%; color: white; font-weight: bold; font-size: 12px;
+            display: flex; align-items: center; justify-content: center; touch-action: none;
+        }
+        #dash-btn { background: rgba(231, 76, 60, 0.7); }
+        #jump-btn { background: rgba(52, 152, 219, 0.7); }
     </style>
 </head>
 <body>
 
-    <div id="ui">RAZEL LEAGUE | GOL: <span id="score">0</span></div>
-    <canvas id="gameCanvas"></canvas>
-
-    <div class="controls">
-        <div class="joystick-zone" id="joyZone">
-            <div id="joystick"></div>
-        </div>
-        <div id="shoot-btn">ŞUT</div>
+    <div id="ui">
+        <h1>RAZEL 3D CUP</h1>
+        <p>SKOR: <span id="score">0</span> | RÜTBE: ÇAYLAK BRONZ</p>
     </div>
 
+    <div class="controls">
+        <div class="btn" id="move-left">SOL</div>
+        <div class="btn" id="move-right">SAĞ</div>
+        <div class="btn" id="jump-btn">ZIPLA</div>
+        <div class="btn" id="dash-btn">DASH</div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
     <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const scoreEl = document.getElementById('score');
+        // --- 1. SAHNE VE KAMERA KURULUMU ---
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x1a1a1a);
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // --- 2. IŞIKLAR ---
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+        const sunLight = new THREE.DirectionalLight(0xffffff, 1);
+        sunLight.position.set(5, 10, 5);
+        scene.add(sunLight);
+
+        // --- 3. SAHA (3D ÇİM) ---
+        const groundGeo = new THREE.BoxGeometry(20, 1, 40);
+        const groundMat = new THREE.MeshPhongMaterial({ color: 0x2ecc71 });
+        const ground = new THREE.Mesh(groundGeo, groundMat);
+        ground.position.y = -0.5;
+        scene.add(ground);
+
+        // --- 4. PLAYER (TÜRKİYE) ---
+        const playerGeo = new THREE.SphereGeometry(1, 32, 32);
+        const playerMat = new THREE.MeshPhongMaterial({ color: 0xe74c3c }); // Kırmızı
+        const player = new THREE.Mesh(playerGeo, playerMat);
+        player.position.set(-3, 1, 10);
+        scene.add(player);
+
+        // --- 5. RAKİP (HOLLANDA - TEST) ---
+        const enemyMat = new THREE.MeshPhongMaterial({ color: 0xffa500 }); // Turuncu
+        const enemy = new THREE.Mesh(playerGeo, enemyMat);
+        enemy.position.set(3, 1, -10);
+        scene.add(enemy);
+
+        // --- 6. TOP ---
+        const ballGeo = new THREE.SphereGeometry(0.6, 32, 32);
+        const ballMat = new THREE.MeshPhongMaterial({ color: 0xffffff });
+        const ball = new THREE.Mesh(ballGeo, ballMat);
+        ball.position.set(0, 0.6, 0);
+        scene.add(ball);
+
+        camera.position.set(0, 10, 20);
+        camera.lookAt(0, 0, 0);
+
+        // --- 7. HAREKET VE KONTROLLER ---
+        let moveState = { left: false, right: false };
+        let velocityY = 0;
+        let isGrounded = true;
+
+        // Mobil Buton Eventleri
+        document.getElementById('move-left').ontouchstart = () => moveState.left = true;
+        document.getElementById('move-left').ontouchend = () => moveState.left = false;
+        document.getElementById('move-right').ontouchstart = () => moveState.right = true;
+        document.getElementById('move-right').ontouchend = () => moveState.right = false;
         
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        document.getElementById('jump-btn').ontouchstart = () => {
+            if(isGrounded) { velocityY = 0.2; isGrounded = false; }
+        };
 
-        let score = 0;
-        let player = { x: 100, y: canvas.height/2, r: 35, color: "#e74c3c", vx: 0, vy: 0 };
-        let ball = { x: canvas.width/2, y: canvas.height/2, r: 20, vx: 0, vy: 0 };
-        
-        // Hareket Değişkenleri
-        let joyActive = false;
-        let joyX = 0, joyY = 0;
+        document.getElementById('dash-btn').ontouchstart = () => {
+            player.position.z -= 2; // Hızlı ileri atılma
+        };
 
-        // Joystick Mantığı
-        const joyZone = document.getElementById('joyZone');
-        const joystick = document.getElementById('joystick');
+        // Klavye Desteği (PC için)
+        window.onkeydown = (e) => {
+            if(e.key === 'a') moveState.left = true;
+            if(e.key === 'd') moveState.right = true;
+            if(e.key === ' ' && isGrounded) { velocityY = 0.2; isGrounded = false; }
+        };
+        window.onkeyup = (e) => {
+            if(e.key === 'a') moveState.left = false;
+            if(e.key === 'd') moveState.right = false;
+        };
 
-        joyZone.addEventListener('touchstart', (e) => { joyActive = true; });
-        window.addEventListener('touchend', () => { 
-            joyActive = false; 
-            player.vx = 0; player.vy = 0;
-            joystick.style.transform = `translate(0px, 0px)`;
-        });
+        // --- 8. OYUN DÖNGÜSÜ ---
+        function animate() {
+            requestAnimationFrame(animate);
 
-        window.addEventListener('touchmove', (e) => {
-            if (!joyActive) return;
-            let touch = e.touches[0];
-            let rect = joyZone.getBoundingClientRect();
-            let centerX = rect.left + rect.width/2;
-            let centerY = rect.top + rect.height/2;
-            
-            let dx = touch.clientX - centerX;
-            let dy = touch.clientY - centerY;
-            let dist = Math.sqrt(dx*dx + dy*dy);
-            let maxDist = 40;
-
-            if (dist > maxDist) {
-                dx *= maxDist / dist;
-                dy *= maxDist / dist;
-            }
-
-            joystick.style.transform = `translate(${dx}px, ${dy}px)`;
-            player.vx = dx * 0.15;
-            player.vy = dy * 0.15;
-        });
-
-        // Şut Butonu
-        document.getElementById('shoot-btn').addEventListener('touchstart', () => {
-            let dx = ball.x - player.x;
-            let dy = ball.y - player.y;
-            let dist = Math.sqrt(dx*dx + dy*dy);
-            if (dist < 70) { // Topa yakınsa vur
-                ball.vx = dx * 0.5;
-                ball.vy = dy * 0.5;
-            }
-        });
-
-        function update() {
             // Oyuncu Hareket
-            player.x += player.vx;
-            player.y += player.vy;
+            if(moveState.left) player.position.x -= 0.1;
+            if(moveState.right) player.position.x += 0.1;
 
-            // Top Hareket & Fizik
-            ball.x += ball.vx;
-            ball.y += ball.vy;
-            ball.vx *= 0.98; ball.vy *= 0.98; // Sürtünme
-
-            // Top ve Oyuncu Çarpışması
-            let dx = ball.x - player.x;
-            let dy = ball.y - player.y;
-            let dist = Math.sqrt(dx*dx + dy*dy);
-            if (dist < player.r + ball.r) {
-                ball.vx = dx * 0.2;
-                ball.vy = dy * 0.2;
+            // Yerçekimi
+            player.position.y += velocityY;
+            if(player.position.y > 1) {
+                velocityY -= 0.01;
+            } else {
+                player.position.y = 1;
+                isGrounded = true;
+                velocityY = 0;
             }
 
-            // Kale ve Gol Kontrolü (Sağ taraf kale)
-            if (ball.x > canvas.width - ball.r) {
-                if (ball.y > canvas.height/3 && ball.y < (canvas.height/3)*2) {
-                    score++;
-                    scoreEl.innerText = score;
-                    ball.x = canvas.width/2; ball.y = canvas.height/2;
-                    ball.vx = 0; ball.vy = 0;
-                } else {
-                    ball.vx *= -1;
-                }
-            }
-            
-            // Sınırlar
-            if (ball.x < ball.r) ball.vx *= -1;
-            if (ball.y < ball.r || ball.y > canvas.height - ball.r) ball.vy *= -1;
+            // Topu Takip Et (Basit Kamera)
+            camera.position.x = player.position.x * 0.5;
 
-            draw();
-            requestAnimationFrame(update);
+            renderer.render(scene, camera);
         }
+        animate();
 
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Saha Çizgileri
-            ctx.strokeStyle = "rgba(255,255,255,0.3)";
-            ctx.lineWidth = 5;
-            ctx.strokeRect(0, canvas.height/3, canvas.width, canvas.height/3);
-
-            // Oyuncu (Countryball)
-            ctx.fillStyle = player.color;
-            ctx.beginPath(); ctx.arc(player.x, player.y, player.r, 0, Math.PI*2); ctx.fill();
-            ctx.fillStyle = "white"; // Gözler
-            ctx.beginPath(); ctx.arc(player.x-10, player.y-5, 6, 0, Math.PI*2); ctx.fill();
-            ctx.beginPath(); ctx.arc(player.x+10, player.y-5, 6, 0, Math.PI*2); ctx.fill();
-
-            // Top
-            ctx.fillStyle = "white";
-            ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI*2); ctx.fill();
-        }
-
-        update();
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
     </script>
 </body>
 </html>
