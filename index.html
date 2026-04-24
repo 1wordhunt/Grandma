@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tabii Creator | Developer</title>
+    <title>Tabii Account Gen | Burak Developer</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -13,6 +13,7 @@
             --success: #238636;
             --border: #30363d;
             --text: #c9d1d9;
+            --error: #f85149;
         }
 
         body {
@@ -22,7 +23,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
         }
 
@@ -38,7 +39,7 @@
 
         .header { text-align: center; margin-bottom: 25px; }
         .header h2 { margin: 0; color: #ffffff; font-size: 22px; text-transform: uppercase; }
-        .header p { font-size: 11px; color: var(--accent); margin-top: 5px; font-weight: bold; }
+        .header p { font-size: 11px; color: var(--accent); margin-top: 5px; font-weight: bold; letter-spacing: 1px; }
 
         .form-group { margin-bottom: 18px; }
         label { display: block; margin-bottom: 8px; font-size: 13px; color: #8b949e; }
@@ -52,9 +53,10 @@
             color: #fff;
             box-sizing: border-box;
             outline: none;
+            transition: 0.2s;
         }
 
-        input:focus { border-color: var(--accent); }
+        input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(88,166,255,0.1); }
 
         button {
             width: 100%;
@@ -69,8 +71,8 @@
             text-transform: uppercase;
         }
 
-        button:hover { background: #2ea043; transform: scale(1.02); }
-        button:disabled { opacity: 0.6; cursor: not-allowed; }
+        button:hover { background: #2ea043; transform: translateY(-2px); }
+        button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
         #statusArea {
             margin-top: 20px;
@@ -81,11 +83,14 @@
             border: 1px solid var(--border);
             background: #0d1117;
             white-space: pre-wrap;
-            word-wrap: break-word;
+            word-break: break-all;
         }
 
         .success-res { border-color: var(--success); color: #3fb950; }
-        .error-res { border-color: #f85149; color: #f85149; }
+        .error-res { border-color: var(--error); color: var(--error); }
+        
+        .loading-icon { animation: spin 1s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -97,16 +102,16 @@
     </div>
 
     <div class="form-group">
-        <label>Oluşturulacak E-posta</label>
+        <label>E-posta (MAIL)</label>
         <input type="text" id="mailInput" placeholder="ornek@mail.com">
     </div>
 
     <div class="form-group">
-        <label>Belirlenecek Şifre</label>
+        <label>Şifre (PASS)</label>
         <input type="password" id="passInput" placeholder="Sifre123">
     </div>
 
-    <button id="genBtn" onclick="olustur()">Hesabı Oluştur</button>
+    <button id="genBtn" onclick="olustur()">Sorguyu Başlat / Oluştur</button>
 
     <div id="statusArea"></div>
 </div>
@@ -119,41 +124,53 @@
         const status = document.getElementById('statusArea');
 
         if(!mail || !pass) {
-            alert("Lütfen tüm alanları doldur!");
+            alert("Lütfen MAIL ve PASS kısımlarını doldurun.");
             return;
         }
 
+        // Arayüz Hazırlığı
         btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-sync fa-spin"></i> İşlem Yapılıyor...';
+        btn.innerHTML = '<i class="fas fa-sync-alt loading-icon"></i> API Yanıtı Bekleniyor...';
         status.style.display = 'none';
 
-        // Senin API URL'in (PASS sonda olacak şekilde ayarlı)
+        // 1. TAM API URL (Parametreler tam istediğin gibi yerleşiyor)
         const targetUrl = `https://vexsorgu-api.alwaysdata.net/api/tabiichecker.php?mail=${encodeURIComponent(mail)}&password=${encodeURIComponent(pass)}`;
         
-        // CORS engelini aşan Proxy URL
-        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
+        // 2. CORS Engelini Aşmak İçin Proxy (AllOrigins yöntemi)
+        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}&timestamp=${new Date().getTime()}`;
 
         try {
             const response = await fetch(proxyUrl);
+            if (!response.ok) throw new Error('Proxy sunucusu hata verdi.');
+            
             const proxyData = await response.json();
             
-            // Proxy veriyi 'contents' içinde string olarak getirir, JSON'a çeviriyoruz
-            const data = JSON.parse(proxyData.contents);
+            // 3. Veriyi Temizle ve JSON'a Çevir
+            // API bazen düz yazı dönebilir, bazen JSON. Bu yapı her ikisini de yakalar.
+            let rawData = proxyData.contents;
+            let finalOutput;
+
+            try {
+                // Eğer gelen veri JSON formatındaysa şık göster
+                const jsonData = JSON.parse(rawData);
+                finalOutput = JSON.stringify(jsonData, null, 2);
+                status.className = 'success-res';
+            } catch (e) {
+                // Eğer düz yazı geliyorsa olduğu gibi göster
+                finalOutput = rawData;
+                status.className = 'success-res';
+            }
 
             status.style.display = 'block';
-            status.className = 'success-res';
-            
-            // API'den gelen sonucun tamamını ekranda göster
-            status.innerHTML = `<strong>Sonuç:</strong><br>${JSON.stringify(data, null, 2)}`;
+            status.innerHTML = `<strong>API SONUCU:</strong><br><pre style="margin:0;">${finalOutput}</pre>`;
 
         } catch (error) {
             status.style.display = 'block';
             status.className = 'error-res';
-            status.innerHTML = `<strong>Hata:</strong> API bağlantısı kurulamadı. <br><small>CORS veya API kaynaklı bir sorun oluştu.</small>`;
-            console.error("Hata:", error);
+            status.innerHTML = `<strong>Bağlantı Hatası:</strong><br>API şu an yanıt vermiyor veya CORS engeli aşılamadı.<br><small>${error.message}</small>`;
         } finally {
             btn.disabled = false;
-            btn.innerHTML = 'Hesabı Oluştur';
+            btn.innerHTML = 'Sorguyu Başlat / Oluştur';
         }
     }
 </script>
