@@ -1,179 +1,116 @@
+
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tabii Account Gen | Burak Developer</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <title>Senin İçin...</title>
     <style>
         :root {
-            --bg: #0d1117;
-            --card: #161b22;
-            --accent: #58a6ff;
-            --success: #238636;
-            --border: #30363d;
-            --text: #c9d1d9;
-            --error: #f85149;
+            --primary-pink: #ffafbd;
+            --secondary-pink: #ffc3a0;
+            --text-color: #4a4a4a;
         }
 
         body {
+            margin: 0;
+            padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
+            background: linear-gradient(135deg, var(--primary-pink) 0%, var(--secondary-pink) 100%);
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            margin: 0;
+            overflow: hidden;
+            color: var(--text-color);
         }
 
-        .creator-card {
-            width: 100%;
-            max-width: 420px;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+        /* Arka Plan Kalp Animasyonu */
+        .heart {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 20px;
+            animation: float 5s infinite ease-in;
+            z-index: 0;
         }
 
-        .header { text-align: center; margin-bottom: 25px; }
-        .header h2 { margin: 0; color: #ffffff; font-size: 22px; text-transform: uppercase; }
-        .header p { font-size: 11px; color: var(--accent); margin-top: 5px; font-weight: bold; letter-spacing: 1px; }
-
-        .form-group { margin-bottom: 18px; }
-        label { display: block; margin-bottom: 8px; font-size: 13px; color: #8b949e; }
-        
-        input {
-            width: 100%;
-            padding: 12px;
-            background: #010409;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: #fff;
-            box-sizing: border-box;
-            outline: none;
-            transition: 0.2s;
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
         }
 
-        input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(88,166,255,0.1); }
+        /* Ana Kart Tasarımı */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 40px;
+            width: 80%;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+            z-index: 1;
+            animation: fadeIn 2s ease-in;
+        }
 
-        button {
-            width: 100%;
-            padding: 14px;
-            background: var(--success);
-            color: white;
+        h1 { font-size: 2.5rem; margin-bottom: 10px; color: #fff; text-shadow: 2px 2px 4px rgba(0,0,0,0.1); }
+        p { font-size: 1.1rem; line-height: 1.6; margin-bottom: 25px; }
+
+        .btn-special {
+            background: white;
+            color: var(--primary-pink);
             border: none;
-            border-radius: 8px;
-            font-weight: 700;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: bold;
             cursor: pointer;
             transition: 0.3s;
-            text-transform: uppercase;
+            text-decoration: none;
+            display: inline-block;
         }
 
-        button:hover { background: #2ea043; transform: translateY(-2px); }
-        button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-
-        #statusArea {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 8px;
-            display: none;
-            font-size: 14px;
-            border: 1px solid var(--border);
-            background: #0d1117;
-            white-space: pre-wrap;
-            word-break: break-all;
+        .btn-special:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
 
-        .success-res { border-color: var(--success); color: #3fb950; }
-        .error-res { border-color: var(--error); color: var(--error); }
-        
-        .loading-icon { animation: spin 1s linear infinite; }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
 
-<div class="creator-card">
-    <div class="header">
-        <h2>Tabii Account Gen</h2>
-        <p>BURAK | DEVELOPER</p>
+    <div class="glass-card">
+        <h1>Selam ✨</h1>
+        <p>Birlikte oyun oynarken, projeler üzerinde çalışırken veya sadece konuşurken zamanın nasıl geçtiğini anlamıyorum. Senin enerjin ve desteğin benim için çok kıymetli.</p>
+        <p><i>"En iyi projelerim, senin sesinle ve varlığınla hayat buluyor."</i></p>
+        <button class="btn-special" onclick="showSurprise()">Buraya Tıkla</button>
+        <div id="surprise" style="display:none; margin-top: 20px; font-weight: bold; color: white;">
+            Gelecekteki tüm zaferlerimizde (ve oyunlardaki MVP'liklerde) beraber olmak dileğiyle! 🎮💎
+        </div>
     </div>
 
-    <div class="form-group">
-        <label>E-posta (MAIL)</label>
-        <input type="text" id="mailInput" placeholder="ornek@mail.com">
-    </div>
-
-    <div class="form-group">
-        <label>Şifre (PASS)</label>
-        <input type="password" id="passInput" placeholder="Sifre123">
-    </div>
-
-    <button id="genBtn" onclick="olustur()">Sorguyu Başlat / Oluştur</button>
-
-    <div id="statusArea"></div>
-</div>
-
-<script>
-    async function olustur() {
-        const mail = document.getElementById('mailInput').value;
-        const pass = document.getElementById('passInput').value;
-        const btn = document.getElementById('genBtn');
-        const status = document.getElementById('statusArea');
-
-        if(!mail || !pass) {
-            alert("Lütfen MAIL ve PASS kısımlarını doldurun.");
-            return;
+    <script>
+        // Kalp yağmuru oluşturucu
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            heart.innerHTML = '❤';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = Math.random() * 3 + 2 + 's';
+            document.body.appendChild(heart);
+            setTimeout(() => { heart.remove(); }, 5000);
         }
+        setInterval(createHeart, 300);
 
-        // Arayüz Hazırlığı
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-sync-alt loading-icon"></i> API Yanıtı Bekleniyor...';
-        status.style.display = 'none';
-
-        // 1. TAM API URL (Parametreler tam istediğin gibi yerleşiyor)
-        const targetUrl = `https://vexsorgu-api.alwaysdata.net/api/tabiichecker.php?mail=${encodeURIComponent(mail)}&password=${encodeURIComponent(pass)}`;
-        
-        // 2. CORS Engelini Aşmak İçin Proxy (AllOrigins yöntemi)
-        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}&timestamp=${new Date().getTime()}`;
-
-        try {
-            const response = await fetch(proxyUrl);
-            if (!response.ok) throw new Error('Proxy sunucusu hata verdi.');
-            
-            const proxyData = await response.json();
-            
-            // 3. Veriyi Temizle ve JSON'a Çevir
-            // API bazen düz yazı dönebilir, bazen JSON. Bu yapı her ikisini de yakalar.
-            let rawData = proxyData.contents;
-            let finalOutput;
-
-            try {
-                // Eğer gelen veri JSON formatındaysa şık göster
-                const jsonData = JSON.parse(rawData);
-                finalOutput = JSON.stringify(jsonData, null, 2);
-                status.className = 'success-res';
-            } catch (e) {
-                // Eğer düz yazı geliyorsa olduğu gibi göster
-                finalOutput = rawData;
-                status.className = 'success-res';
-            }
-
-            status.style.display = 'block';
-            status.innerHTML = `<strong>API SONUCU:</strong><br><pre style="margin:0;">${finalOutput}</pre>`;
-
-        } catch (error) {
-            status.style.display = 'block';
-            status.className = 'error-res';
-            status.innerHTML = `<strong>Bağlantı Hatası:</strong><br>API şu an yanıt vermiyor veya CORS engeli aşılamadı.<br><small>${error.message}</small>`;
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = 'Sorguyu Başlat / Oluştur';
+        function showSurprise() {
+            document.getElementById('surprise').style.display = 'block';
+            alert("İyi ki varsın!");
         }
-    }
-</script>
-
+    </script>
 </body>
 </html>
