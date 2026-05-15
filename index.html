@@ -17,7 +17,7 @@
             height: 100%;
             background-color: var(--bg-dark);
             color: white;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             overflow: hidden;
             display: flex;
             justify-content: center;
@@ -35,15 +35,17 @@
             border-radius: 12px;
             border-left: 3px solid var(--accent-color);
             font-family: monospace;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             backdrop-filter: blur(5px);
             z-index: 10;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
         .container {
             text-align: center;
             z-index: 5;
             padding: 20px;
+            transition: opacity 0.5s ease;
         }
 
         h1 {
@@ -52,9 +54,6 @@
             background: linear-gradient(to right, #fff, var(--accent-color));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeInUp 1s forwards;
         }
 
         p {
@@ -62,6 +61,7 @@
             color: #ccc;
             max-width: 600px;
             margin-bottom: 30px;
+            line-height: 1.6;
         }
 
         /* Özel Buton */
@@ -82,7 +82,7 @@
 
         .magic-button:hover {
             background: var(--accent-color);
-            box-shadow: 0 0 20px var(--accent-color);
+            box-shadow: 0 0 25px var(--accent-color);
             transform: scale(1.05);
         }
 
@@ -93,15 +93,13 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 5rem;
+            font-size: 4.5rem;
             font-weight: 900;
             z-index: 100;
+            text-align: center;
+            width: 100%;
             text-shadow: 0 0 30px rgba(255,46,99,0.8);
             animation: heartBeat 1.5s infinite;
-        }
-
-        @keyframes fadeInUp {
-            to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes heartBeat {
@@ -112,7 +110,7 @@
             70% { transform: translate(-50%, -50%) scale(1); }
         }
 
-        canvas { position: absolute; top: 0; left: 0; }
+        canvas { position: absolute; top: 0; left: 0; z-index: 1; }
     </style>
 </head>
 <body>
@@ -133,8 +131,7 @@
     <div id="surprise-text">İYİ Kİ VARSIN! ❤️</div>
 
     <script>
-        // Sayaç Mantığı
-        // Verilen: 243 gün, 5844 saat (zaten 243 gün içinde), biz toplam süreyi saniyeye döküyoruz.
+        // Sayaç Mantığı (243 gün, 5844 saat üzerinden toplam saniyeyi başlatıyoruz)
         let totalSeconds = (243 * 24 * 60 * 60); 
 
         function updateCounter() {
@@ -147,21 +144,28 @@
             document.getElementById('counter').innerHTML = 
                 `${days}g ${hours}s ${mins}dk ${secs}sn`;
         }
+        // Sayacı hemen başlat ve her saniye güncelle
+        updateCounter();
         setInterval(updateCounter, 1000);
 
         // Arka Plan Yıldız Animasyonu
         const canvas = document.getElementById('stars');
         const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        let stars = [];
+        
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
 
+        let stars = [];
         for(let i=0; i<150; i++) {
             stars.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight,
                 size: Math.random() * 2,
-                speed: Math.random() * 0.5
+                speed: Math.random() * 0.5 + 0.1
             });
         }
 
@@ -179,17 +183,21 @@
         }
         drawStars();
 
-        // Sürpriz Fonksiyonu
+        // Sürpriz Fonksiyonu (Çalışmayan kısım düzeltildi)
         function launchSurprise() {
-            document.body.style.background = "radial-gradient(circle, #4b0082 0%, #000 100%)";
-            document.getElementById('main-content').style.opacity = "0";
-            setTimeout(() => {
-                document.getElementById('main-content').style.display = "none";
-                document.getElementById('surprise-text').style.display = "block";
-            }, 500);
+            // Arka planı derin mor/gece rengi yap
+            document.body.style.background = "radial-gradient(circle, #2d004d 0%, #050505 100%)";
             
-            // Konfeti efekti simülasyonu için arka planı hareketlendir
-            var--accent-color = "#ff2e63";
+            // Eski içeriği soft bir şekilde gizle
+            const mainContent = document.getElementById('main-content');
+            mainContent.style.opacity = "0";
+            
+            setTimeout(() => {
+                mainContent.style.display = "none";
+                // Yeni yazıyı getir
+                const surprise = document.getElementById('surprise-text');
+                surprise.style.display = "block";
+            }, 500);
         }
     </script>
 </body>
